@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'core/network/api_client.dart';
 import 'features/auth/bloc/auth_bloc.dart';
@@ -11,7 +12,7 @@ import 'features/auth/screens/register_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/shell/screens/app_shell.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(
@@ -28,11 +29,16 @@ void main() {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const StaggioApp());
+  final prefs = await SharedPreferences.getInstance();
+  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
+  runApp(StaggioApp(onboardingDone: onboardingDone));
 }
 
 class StaggioApp extends StatelessWidget {
-  const StaggioApp({super.key});
+  final bool onboardingDone;
+
+  const StaggioApp({super.key, this.onboardingDone = false});
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +50,49 @@ class StaggioApp extends StatelessWidget {
         title: 'Staggio',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthInitial || state is AuthLoading) {
-              return const _SplashScreen();
-            }
-            if (state is AuthAuthenticated) {
-              return AppShell(user: state.user, apiClient: apiClient);
-            }
-            return _AuthFlow(apiClient: apiClient);
-          },
-        ),
+        home: _AppRoot(apiClient: apiClient, onboardingDone: onboardingDone),
       ),
+    );
+  }
+}
+
+class _AppRoot extends StatefulWidget {
+  final ApiClient apiClient;
+  final bool onboardingDone;
+
+  const _AppRoot({required this.apiClient, required this.onboardingDone});
+
+  @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> {
+  bool _initialCheckDone = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (previous, current) =>
+          current is AuthAuthenticated || current is AuthUnauthenticated,
+      listener: (context, state) {
+        setState(() => _initialCheckDone = true);
+      },
+      buildWhen: (previous, current) =>
+          current is AuthInitial ||
+          current is AuthAuthenticated ||
+          current is AuthUnauthenticated,
+      builder: (context, state) {
+        if (!_initialCheckDone || state is AuthInitial) {
+          return const _SplashScreen();
+        }
+        if (state is AuthAuthenticated) {
+          return AppShell(user: state.user, apiClient: widget.apiClient);
+        }
+        return _AuthFlow(
+          apiClient: widget.apiClient,
+          onboardingDone: widget.onboardingDone,
+        );
+      },
     );
   }
 }
@@ -121,23 +158,34 @@ class _SplashScreen extends StatelessWidget {
 
 class _AuthFlow extends StatefulWidget {
   final ApiClient apiClient;
+  final bool onboardingDone;
 
-  const _AuthFlow({required this.apiClient});
+  const _AuthFlow({required this.apiClient, required this.onboardingDone});
 
   @override
   State<_AuthFlow> createState() => _AuthFlowState();
 }
 
 class _AuthFlowState extends State<_AuthFlow> {
-  bool _showOnboarding = true;
+  late bool _showOnboarding;
   bool _showLogin = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _showOnboarding = !widget.onboardingDone;
+  }
+
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_done', true);
+    setState(() => _showOnboarding = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     if (_showOnboarding) {
-      return OnboardingScreen(
-        onComplete: () => setState(() => _showOnboarding = false),
-      );
+      return OnboardingScreen(onComplete: _completeOnboarding);
     }
 
     if (_showLogin) {
