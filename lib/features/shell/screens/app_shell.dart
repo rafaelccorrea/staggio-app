@@ -1,0 +1,289 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/network/api_client.dart';
+import '../../../data/models/user_model.dart';
+import '../../home/screens/home_screen.dart';
+import '../../properties/screens/properties_screen.dart';
+import '../../ai/screens/ai_chat_screen.dart';
+import '../../ai/screens/ai_staging_screen.dart';
+import '../../ai/screens/ai_description_screen.dart';
+import '../../profile/screens/profile_screen.dart';
+
+class AppShell extends StatefulWidget {
+  final UserModel user;
+  final ApiClient apiClient;
+
+  const AppShell({super.key, required this.user, required this.apiClient});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  int _currentIndex = 0;
+
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      HomeScreen(user: widget.user),
+      const PropertiesScreen(),
+      AiChatScreen(apiClient: widget.apiClient),
+      ProfileScreen(user: widget.user),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Iconsax.home_2, 'Home'),
+                _buildNavItem(1, Iconsax.building_4, 'Imóveis'),
+                _buildCenterButton(),
+                _buildNavItem(2, Iconsax.message_text, 'Chat IA'),
+                _buildNavItem(3, Iconsax.user, 'Perfil'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _currentIndex == index;
+
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterButton() {
+    return GestureDetector(
+      onTap: () {
+        _showAiToolsSheet(context);
+      },
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Iconsax.magic_star,
+          color: Colors.white,
+          size: 28,
+        ),
+      ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(
+            delay: 2000.ms,
+            duration: 1500.ms,
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+    );
+  }
+
+  void _showAiToolsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Ferramentas de IA',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            _buildAiToolItem(
+              context,
+              icon: Iconsax.brush_1,
+              title: 'Home Staging',
+              subtitle: 'Decore ambientes vazios',
+              gradient: AppColors.stagingGradient,
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AiStagingScreen(apiClient: widget.apiClient),
+                  ),
+                );
+              },
+            ),
+            _buildAiToolItem(
+              context,
+              icon: Iconsax.building_4,
+              title: 'Visão de Terreno',
+              subtitle: 'Visualize construções',
+              gradient: AppColors.terrainGradient,
+              onTap: () => Navigator.pop(ctx),
+            ),
+            _buildAiToolItem(
+              context,
+              icon: Iconsax.document_text,
+              title: 'Descrição IA',
+              subtitle: 'Gere textos profissionais',
+              gradient: AppColors.primaryGradient,
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AiDescriptionScreen(apiClient: widget.apiClient),
+                  ),
+                );
+              },
+            ),
+            _buildAiToolItem(
+              context,
+              icon: Iconsax.camera,
+              title: 'Melhorar Foto',
+              subtitle: 'Fotos profissionais com IA',
+              gradient: AppColors.cardGradient,
+              onTap: () => Navigator.pop(ctx),
+            ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAiToolItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required LinearGradient gradient,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: gradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Iconsax.arrow_right_3, color: AppColors.textTertiary, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}

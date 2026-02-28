@@ -1,0 +1,19 @@
+{
+  "name": "Intellisys - Sistema Imobiliário",
+  "short_name": "Intellisys",
+  "description": "Sistema completo para gestão imobiliária. Propriedades, clientes, equipes e muito mais em uma única plataforma.",
+  "id": "/sistema/",
+  "start_url": "/sistema/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#A63126",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

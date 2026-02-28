@@ -1,0 +1,41 @@
+class ApiConstants {
+  static const String baseUrl = 'http://localhost:3000/api';
+  static const Duration connectTimeout = Duration(seconds: 30);
+  static const Duration receiveTimeout = Duration(seconds: 30);
+
+  // Auth
+  static const String login = '/auth/login';
+  static const String register = '/auth/register';
+  static const String me = '/auth/me';
+
+  // Users
+  static const String profile = '/users/profile';
+  static const String dashboard = '/users/dashboard';
+
+  // Properties
+  static const String properties = '/properties';
+  static const String propertyStats = '/properties/stats';
+
+  // AI
+  static const String aiDescription = '/ai/description';
+  static const String aiStaging = '/ai/staging';
+  static const String aiTerrainVision = '/ai/terrain-vision';
+  static const String aiPhotoEnhance = '/ai/photo-enhance';
+  static const String aiChat = '/ai/chat';
+
+  // Subscriptions
+  static const String plans = '/subscriptions/plans';
+  static const String currentSubscription = '/subscriptions/current';
+  static const String usage = '/subscriptions/usage';
+
+  // Stripe
+  static const String stripeCheckout = '/stripe/checkout';
+  static const String stripePortal = '/stripe/portal';
+
+  // Storage
+  static const String upload = '/storage/upload';
+  static const String uploadMultiple = '/storage/upload-multiple';
+
+  // Health
+  static const String health = '/health';
+}
