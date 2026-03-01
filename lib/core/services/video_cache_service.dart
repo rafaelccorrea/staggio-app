@@ -28,6 +28,9 @@ class VideoCacheService {
 
     dev.log('[VIDEO_CACHE] Criando novo controller para: $url', name: 'VideoCacheService');
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    controller.initialize().then((_) {
+      controller.setLooping(true);
+    });
     _cache[url] = controller;
     return controller;
   }

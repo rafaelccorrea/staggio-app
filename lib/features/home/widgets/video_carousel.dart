@@ -397,6 +397,7 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
                   if (!_isControllerUsable(ctrl)) continue;
                   try {
                     if (i == index) {
+                      ctrl.setLooping(true);
                       ctrl.play();
                     } else {
                       ctrl.pause();
