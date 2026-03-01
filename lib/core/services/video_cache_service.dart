@@ -5,6 +5,7 @@ class VideoCacheService {
   static final VideoCacheService _instance = VideoCacheService._internal();
   static final Map<String, VideoPlayerController> _cache = {};
   static bool _isPreloading = false;
+  static const int _maxCacheSize = 3; // Limit to 3 videos in memory
 
   factory VideoCacheService() {
     return _instance;
@@ -17,6 +18,18 @@ class VideoCacheService {
     if (_cache.containsKey(url)) {
       dev.log('[VIDEO_CACHE] Usando vídeo em cache: $url', name: 'VideoCacheService');
       return _cache[url]!;
+    }
+
+    // If cache is full, remove oldest entry
+    if (_cache.length >= _maxCacheSize) {
+      final oldestKey = _cache.keys.first;
+      dev.log('[VIDEO_CACHE] Cache cheio, removendo: $oldestKey', name: 'VideoCacheService');
+      try {
+        _cache[oldestKey]?.dispose();
+      } catch (e) {
+        dev.log('[VIDEO_CACHE] Erro ao descartar vídeo: $e', name: 'VideoCacheService');
+      }
+      _cache.remove(oldestKey);
     }
 
     dev.log('[VIDEO_CACHE] Criando novo controller para: $url', name: 'VideoCacheService');

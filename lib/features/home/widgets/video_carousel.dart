@@ -113,6 +113,18 @@ class _VideoCarouselState extends State<VideoCarousel> {
     );
   }
 
+  void _pauseOtherVideos(int activeIndex) {
+    for (int i = 0; i < _controllers.length; i++) {
+      if (i != activeIndex) {
+        try {
+          if (_isControllerUsable(_controllers[i]) && _controllers[i].value.isPlaying) {
+            _controllers[i].pause();
+          }
+        } catch (_) {}
+      }
+    }
+  }
+
   void _showControlsTemporarily() {
     setState(() => _showControls = true);
     Future.delayed(const Duration(seconds: 3), () {
