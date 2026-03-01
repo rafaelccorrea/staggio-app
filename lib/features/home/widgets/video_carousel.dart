@@ -28,59 +28,43 @@ class _VideoCarouselState extends State<VideoCarousel> {
   late PageController _pageController;
   late List<VideoPlayerController> _controllers;
   int _currentIndex = 0;
-  bool _showControls = false;
-  late Future<void> _initializeVideosFuture;
   bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    // Use cached controllers from VideoCacheService
     _controllers = List.generate(
       widget.videos.length,
       (index) => VideoCacheService.getController(widget.videos[index].url),
     );
-    _initializeVideosFuture = _initializeVideos();
+    _initializeVideos();
   }
 
   Future<void> _initializeVideos() async {
-    // Initialize only the first video immediately for faster loading
-    if (_controllers.isNotEmpty && !_disposed) {
-      try {
-        final firstController = _controllers[0];
-        if (!firstController.value.isInitialized) {
-          await firstController.initialize().timeout(
-            const Duration(seconds: 20),
-            onTimeout: () {
-              debugPrint('[VIDEO_CAROUSEL] Timeout ao inicializar primeiro video');
-            },
-          );
-          firstController.setLooping(true);
-          firstController.setVolume(0.0);
-        }
-      } catch (e) {
-        debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar primeiro video: $e');
+    if (_controllers.isEmpty || _disposed) return;
+
+    try {
+      final firstController = _controllers[0];
+      if (!firstController.value.isInitialized) {
+        await firstController.initialize().timeout(
+          const Duration(seconds: 20),
+          onTimeout: () {
+            debugPrint('[VIDEO_CAROUSEL] Timeout ao inicializar primeiro video');
+          },
+        );
+        firstController.setLooping(true);
+        firstController.setVolume(0.0);
       }
+      if (mounted && !_disposed && !firstController.value.isPlaying) {
+        firstController.play();
+      }
+    } catch (e) {
+      debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar primeiro video: $e');
     }
-    if (mounted && !_disposed) {
-      setState(() {
-        try {
-          if (_controllers.isNotEmpty &&
-              _controllers[0].value.isInitialized &&
-              !_controllers[0].value.isPlaying) {
-            _controllers[0].play();
-          }
-        } catch (e) {
-          debugPrint('[VIDEO_CAROUSEL] Erro ao iniciar reproducao: $e');
-        }
-      });
-    }
-    // Pre-load other videos in background
+
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (!_disposed) {
-        _preloadOtherVideos();
-      }
+      if (!_disposed) _preloadOtherVideos();
     });
   }
 
@@ -116,56 +100,6 @@ class _VideoCarouselState extends State<VideoCarousel> {
     }
   }
 
-  void _togglePlayPause() {
-    if (_disposed) return;
-    final controller = _controllers[_currentIndex];
-    if (!_isControllerUsable(controller)) return;
-
-    setState(() {
-      try {
-        if (controller.value.isPlaying) {
-          controller.pause();
-        } else {
-          controller.play();
-        }
-      } catch (e) {
-        debugPrint('[VIDEO_CAROUSEL] Erro ao alternar play/pause: $e');
-      }
-    });
-  }
-
-  void _toggleFullScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => FullScreenVideoCarousel(
-          videos: widget.videos,
-          initialIndex: _currentIndex,
-          controllers: _controllers,
-        ),
-      ),
-    );
-  }
-
-  void _pauseOtherVideos(int activeIndex) {
-    for (int i = 0; i < _controllers.length; i++) {
-      if (i != activeIndex) {
-        try {
-          if (_isControllerUsable(_controllers[i]) && _controllers[i].value.isPlaying) {
-            _controllers[i].pause();
-          }
-        } catch (_) {}
-      }
-    }
-  }
-
-  void _showControlsTemporarily() {
-    setState(() => _showControls = true);
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_disposed) {
-        setState(() => _showControls = false);
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -188,133 +122,96 @@ class _VideoCarouselState extends State<VideoCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _initializeVideosFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Column(
-            children: [
-              // Video Carousel
-              SizedBox(
-                height: 220,
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    if (_disposed) return;
-                    setState(() => _currentIndex = index);
-                    // Play current, pause others
-                    for (int i = 0; i < _controllers.length; i++) {
-                      final ctrl = _controllers[i];
-                      if (!_isControllerUsable(ctrl)) continue;
-                      try {
-                        if (i == index) {
-                          ctrl.play();
-                        } else {
-                          ctrl.pause();
-                        }
-                      } catch (_) {}
-                    }
-                  },
-                  itemCount: widget.videos.length,
-                  itemBuilder: (context, index) {
-                    final controller = _controllers[index];
-                    final isUsable = _isControllerUsable(controller);
+    return Column(
+      children: [
+        SizedBox(
+          height: 220,
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              if (_disposed) return;
+              setState(() => _currentIndex = index);
+              for (int i = 0; i < _controllers.length; i++) {
+                final ctrl = _controllers[i];
+                if (!_isControllerUsable(ctrl)) continue;
+                try {
+                  if (i == index) {
+                    ctrl.play();
+                  } else {
+                    ctrl.pause();
+                  }
+                } catch (_) {}
+              }
+            },
+            itemCount: widget.videos.length,
+            itemBuilder: (context, index) {
+              final controller = _controllers[index];
 
-                    return GestureDetector(
-                      onTap: () {
-                        _showControlsTemporarily();
-                        _togglePlayPause();
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.transparent,
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: ValueListenableBuilder<VideoPlayerValue>(
+                  valueListenable: controller,
+                  builder: (context, value, child) {
+                    final isInitialized = _isControllerUsable(controller) && value.isInitialized;
+
+                    if (!isInitialized) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Shimmer.fromColors(
+                          baseColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[800]!
+                              : Colors.grey[300]!,
+                          highlightColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[700]!
+                              : Colors.grey[100]!,
+                          child: Container(color: Colors.white),
                         ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Video Player or placeholder
-                            if (isUsable && controller.value.isInitialized)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: AspectRatio(
-                                  aspectRatio: controller.value.aspectRatio,
-                                  child: VideoPlayer(controller),
-                                ),
-                              )
-                            else
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Shimmer.fromColors(
-                                  baseColor: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.grey[800]!
-                                      : Colors.grey[300]!,
-                                  highlightColor: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.grey[700]!
-                                      : Colors.grey[100]!,
-                                  child: Container(
-                                    color: Colors.white,
+                      );
+                    }
+
+                    return Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: AspectRatio(
+                            aspectRatio: value.aspectRatio,
+                            child: VideoPlayer(controller),
+                          ),
+                        ),
+                        if (widget.videos[index].prompt != null)
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                builder: (_) => Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Prompt utilizado',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        widget.videos[index].prompt!,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
                                   ),
                                 ),
                               ),
-
-                            // Play/Pause Overlay (appears on tap)
-                            if (_showControls && isUsable)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.black.withValues(alpha: 0.09)
-                                      : Colors.black.withValues(alpha: 0.3),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Center(
-                                  child: Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.9),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      controller.value.isPlaying
-                                          ? Iconsax.pause
-                                          : Iconsax.play,
-                                      color: Colors.black,
-                                      size: 32,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                            // Fullscreen button (appears on tap)
-                            if (_showControls)
-                              Positioned(
-                                top: 12,
-                                right: 12,
-                                child: GestureDetector(
-                                  onTap: _toggleFullScreen,
-                                  child: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.9),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Iconsax.maximize_4,
-                                      color: Colors.black,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                            // Video Title and Prompt Button (always visible)
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
                               child: Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -322,7 +219,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      Colors.black.withValues(alpha: 0.85),
+                                      Colors.black.withValues(alpha: 0.7),
                                     ],
                                   ),
                                   borderRadius: const BorderRadius.only(
@@ -330,120 +227,58 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     bottomRight: Radius.circular(16),
                                   ),
                                 ),
-                                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
+                                padding: const EdgeInsets.fromLTRB(12, 20, 12, 10),
+                                child: Row(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            widget.videos[index].title,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                    const Icon(Icons.auto_awesome, color: Colors.white, size: 14),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        widget.videos[index].prompt!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          height: 1.4,
                                         ),
-                                        if (widget.videos[index].prompt != null)
-                                          GestureDetector(
-                                            onTap: () {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                builder: (_) => Container(
-                                                  padding: const EdgeInsets.all(16),
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      const Text(
-                                                        'IA Prompt',
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 12),
-                                                      Text(
-                                                        widget.videos[index].prompt!,
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          height: 1.5,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(6),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withValues(alpha: 0.2),
-                                                borderRadius: BorderRadius.circular(6),
-                                              ),
-                                              child: const Icon(
-                                                Iconsax.code,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                      ],
                     );
                   },
                 ),
-              ),
+              );
+            },
+          ),
+        ),
 
-              const SizedBox(height: 12),
+        const SizedBox(height: 12),
 
-              // Carousel Indicators
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  widget.videos.length,
-                  (index) => Container(
-                    width: _currentIndex == index ? 24 : 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: _currentIndex == index
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).dividerColor,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        } else {
-          return SizedBox(
-            height: 220,
-            child: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).primaryColor,
-                ),
+        // Indicadores
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            widget.videos.length,
+            (index) => Container(
+              width: _currentIndex == index ? 24 : 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: _currentIndex == index
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).dividerColor,
               ),
             ),
-          );
-        }
-      },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -553,8 +388,10 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
                 final isUsable = _isControllerUsable(controller);
 
                 if (!isUsable || !controller.value.isInitialized) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[900]!,
+                    highlightColor: Colors.grey[700]!,
+                    child: Container(color: Colors.black),
                   );
                 }
 
