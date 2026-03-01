@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../core/enums/plan_type.dart';
 
 class UserModel extends Equatable {
   final String id;
@@ -8,7 +9,7 @@ class UserModel extends Equatable {
   final String? phone;
   final String? creci;
   final String? avatarUrl;
-  final String plan;
+  final PlanType plan;
   final int aiCreditsUsed;
   final int aiCreditsLimit;
   final int bonusCredits;
@@ -21,7 +22,7 @@ class UserModel extends Equatable {
     this.phone,
     this.creci,
     this.avatarUrl,
-    this.plan = 'free',
+    this.plan = PlanType.free,
     this.aiCreditsUsed = 0,
     this.aiCreditsLimit = 5,
     this.bonusCredits = 0,
@@ -34,7 +35,7 @@ class UserModel extends Equatable {
       name: 'Visitante',
       email: '',
       role: 'guest',
-      plan: 'free',
+      plan: PlanType.free,
       aiCreditsUsed: 0,
       aiCreditsLimit: 0,
       bonusCredits: 0,
@@ -52,7 +53,7 @@ class UserModel extends Equatable {
       phone: json['phone'],
       creci: json['creci'],
       avatarUrl: json['avatarUrl'],
-      plan: json['plan'] ?? 'free',
+      plan: PlanType.fromString(json['plan']),
       aiCreditsUsed: json['aiCreditsUsed'] ?? 0,
       aiCreditsLimit: json['aiCreditsLimit'] ?? 5,
       bonusCredits: json['bonusCredits'] ?? 0,
@@ -80,7 +81,7 @@ class UserModel extends Equatable {
     String? phone,
     String? creci,
     String? avatarUrl,
-    String? plan,
+    PlanType? plan,
     int? aiCreditsUsed,
     int? aiCreditsLimit,
     int? bonusCredits,
@@ -117,18 +118,7 @@ class UserModel extends Equatable {
 
   int get totalGenerations => aiCreditsUsed;
 
-  String get planDisplayName {
-    switch (plan) {
-      case 'starter':
-        return 'Starter';
-      case 'pro':
-        return 'Pro';
-      case 'agency':
-        return 'Imobiliária';
-      default:
-        return 'Gratuito';
-    }
-  }
+  String get planDisplayName => plan.displayName;
 
   @override
   List<Object?> get props =>

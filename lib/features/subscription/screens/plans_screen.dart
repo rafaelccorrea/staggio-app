@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
 import '../../auth/bloc/auth_state.dart';
 
 class PlansScreen extends StatefulWidget {
@@ -88,7 +89,8 @@ class _PlansScreenState extends State<PlansScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
-                Navigator.pushNamed(context, '/login');
+                // Trigger login flow - logout to show login screen
+                context.read<AuthBloc>().add(AuthLogoutRequested());
               },
               child: const Text('Fazer Login'),
             ),
@@ -291,7 +293,8 @@ class _PlansScreenState extends State<PlansScreen> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/login');
+                    // Trigger login flow - logout to show login screen
+                    context.read<AuthBloc>().add(AuthLogoutRequested());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,

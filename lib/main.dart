@@ -69,6 +69,9 @@ class StaggioApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: _AppRoot(apiClient: apiClient, onboardingDone: onboardingDone),
+            routes: {
+              '/': (context) => _AppRoot(apiClient: apiClient, onboardingDone: onboardingDone),
+            },
           );
         },
       ),

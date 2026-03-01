@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/enums/plan_type.dart';
 import '../../../data/models/user_model.dart';
 import '../../subscription/screens/plans_screen.dart';
 import '../../subscription/screens/buy_credits_screen.dart';
@@ -85,7 +86,7 @@ class CreditsCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (user.isGuest || user.plan == 'free')
+              if (user.isGuest || user.plan == PlanType.free)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -114,7 +115,7 @@ class CreditsCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (user.plan != 'free')
+              if (user.plan != PlanType.free)
                 TextButton(
                   onPressed: () {
                     Navigator.push(

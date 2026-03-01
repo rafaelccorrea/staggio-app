@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:staggio/data/models/user_model.dart';
+import 'package:staggio/core/enums/plan_type.dart';
 
 void main() {
   group('UserModel', () {
@@ -9,7 +10,7 @@ void main() {
         'name': 'Rafael Correa',
         'email': 'rafael@test.com',
         'role': 'corretor',
-        'plan': 'pro',
+        'plan': PlanType.pro.value,
         'aiCreditsUsed': 15,
         'aiCreditsLimit': 100,
       };
@@ -30,7 +31,7 @@ void main() {
         name: 'Rafael Correa',
         email: 'rafael@test.com',
         role: 'corretor',
-        plan: 'pro',
+        plan: PlanType.pro,
         aiCreditsUsed: 15,
         aiCreditsLimit: 100,
       );
@@ -46,19 +47,19 @@ void main() {
     test('should return correct plan display name', () {
       final starterUser = UserModel(
         id: '1', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'starter', aiCreditsUsed: 0, aiCreditsLimit: 50,
+        plan: PlanType.starter, aiCreditsUsed: 0, aiCreditsLimit: 50,
       );
       final proUser = UserModel(
         id: '2', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'pro', aiCreditsUsed: 0, aiCreditsLimit: 100,
+        plan: PlanType.pro, aiCreditsUsed: 0, aiCreditsLimit: 100,
       );
       final agencyUser = UserModel(
         id: '3', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'agency', aiCreditsUsed: 0, aiCreditsLimit: 500,
+        plan: PlanType.agency, aiCreditsUsed: 0, aiCreditsLimit: 500,
       );
       final freeUser = UserModel(
         id: '4', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'free', aiCreditsUsed: 0, aiCreditsLimit: 5,
+        plan: PlanType.free, aiCreditsUsed: 0, aiCreditsLimit: 5,
       );
 
       expect(starterUser.planDisplayName, 'Starter');
@@ -70,7 +71,7 @@ void main() {
     test('should calculate credits percentage', () {
       final user = UserModel(
         id: '1', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'pro', aiCreditsUsed: 30, aiCreditsLimit: 100,
+        plan: PlanType.pro, aiCreditsUsed: 30, aiCreditsLimit: 100,
       );
 
       expect(user.creditsPercentage, 0.3);
@@ -79,7 +80,7 @@ void main() {
     test('should detect when credits are exhausted', () {
       final user = UserModel(
         id: '1', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'pro', aiCreditsUsed: 100, aiCreditsLimit: 100,
+        plan: PlanType.pro, aiCreditsUsed: 100, aiCreditsLimit: 100,
       );
 
       expect(user.hasCredits, false);
@@ -88,7 +89,7 @@ void main() {
     test('should detect when credits are available', () {
       final user = UserModel(
         id: '1', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'pro', aiCreditsUsed: 50, aiCreditsLimit: 100,
+        plan: PlanType.pro, aiCreditsUsed: 50, aiCreditsLimit: 100,
       );
 
       expect(user.hasCredits, true);
@@ -97,12 +98,12 @@ void main() {
     test('should copy with new values', () {
       final user = UserModel(
         id: '1', name: 'Test', email: 'test@test.com', role: 'corretor',
-        plan: 'free',
+        plan: PlanType.free,
       );
 
-      final updated = user.copyWith(plan: 'pro', aiCreditsLimit: 100);
+      final updated = user.copyWith(plan: PlanType.pro, aiCreditsLimit: 100);
 
-      expect(updated.plan, 'pro');
+      expect(updated.plan, PlanType.pro);
       expect(updated.aiCreditsLimit, 100);
       expect(updated.name, 'Test');
     });
