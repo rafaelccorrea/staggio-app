@@ -183,7 +183,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          color: Colors.black,
+                          color: Colors.transparent,
                         ),
                         child: Stack(
                           alignment: Alignment.center,
