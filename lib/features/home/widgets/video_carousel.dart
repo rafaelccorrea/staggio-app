@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../core/services/video_cache_service.dart';
 
 class VideoCarousel extends StatefulWidget {
@@ -44,17 +45,17 @@ class _VideoCarouselState extends State<VideoCarousel> {
   }
 
   Future<void> _initializeVideos() async {
-    // Only initialize controllers that aren't already initialized
-    for (var controller in _controllers) {
-      if (_disposed) return;
+    // Initialize only the first video immediately for faster loading
+    if (_controllers.isNotEmpty && !_disposed) {
       try {
-        if (!controller.value.isInitialized) {
-          await controller.initialize();
-          controller.setLooping(true);
-          controller.setVolume(0.0); // Mute by default
+        final firstController = _controllers[0];
+        if (!firstController.value.isInitialized) {
+          await firstController.initialize();
+          firstController.setLooping(true);
+          firstController.setVolume(0.0);
         }
       } catch (e) {
-        debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar vídeo: $e');
+        debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar primeiro video: $e');
       }
     }
     if (mounted && !_disposed) {
@@ -66,9 +67,31 @@ class _VideoCarouselState extends State<VideoCarousel> {
             _controllers[0].play();
           }
         } catch (e) {
-          debugPrint('[VIDEO_CAROUSEL] Erro ao iniciar reprodução: $e');
+          debugPrint('[VIDEO_CAROUSEL] Erro ao iniciar reproducao: $e');
         }
       });
+    }
+    // Pre-load other videos in background
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!_disposed) {
+        _preloadOtherVideos();
+      }
+    });
+  }
+
+  Future<void> _preloadOtherVideos() async {
+    for (int i = 1; i < _controllers.length; i++) {
+      if (_disposed) return;
+      try {
+        final controller = _controllers[i];
+        if (!controller.value.isInitialized) {
+          await controller.initialize();
+          controller.setLooping(true);
+          controller.setVolume(0.0);
+        }
+      } catch (e) {
+        debugPrint('[VIDEO_CAROUSEL] Erro ao pre-carregar video $i: $e');
+      }
     }
   }
 
@@ -211,10 +234,17 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                 ),
                               )
                             else
-                              Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).primaryColor,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Shimmer.fromColors(
+                                  baseColor: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey[800]!
+                                      : Colors.grey[300]!,
+                                  highlightColor: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey[700]!
+                                      : Colors.grey[100]!,
+                                  child: Container(
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
