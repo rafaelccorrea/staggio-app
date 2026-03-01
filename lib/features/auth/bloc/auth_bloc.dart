@@ -2,6 +2,8 @@ import 'dart:developer' as dev;
 
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import '../../../core/network/api_client.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../data/models/user_model.dart';
@@ -10,11 +12,13 @@ import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ApiClient apiClient;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   AuthBloc({required this.apiClient}) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
+    on<AuthGoogleLoginRequested>(_onGoogleLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
   }
 
@@ -51,8 +55,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     dev.log('[AUTH] Login iniciado para: ${event.email}', name: 'AuthBloc');
     emit(AuthLoading());
     try {
-      dev.log('[AUTH] POST ${ApiConstants.baseUrl}${ApiConstants.login}', name: 'AuthBloc');
-
       final response = await apiClient.post(
         ApiConstants.login,
         data: {
@@ -61,15 +63,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
       );
 
-      dev.log('[AUTH] Resposta recebida - status: ${response.statusCode}', name: 'AuthBloc');
-      dev.log('[AUTH] Body: ${response.data}', name: 'AuthBloc');
-
       final body = response.data['data'] ?? response.data;
-      dev.log('[AUTH] Body desempacotado: $body', name: 'AuthBloc');
-
       final token = body['accessToken'];
-      dev.log('[AUTH] Token: ${token != null ? "${token.toString().substring(0, 20)}..." : "NULL"}', name: 'AuthBloc');
-
       await apiClient.saveToken(token);
 
       final user = UserModel.fromJson(body['user']);
@@ -77,12 +72,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthAuthenticated(user: user));
     } catch (e) {
       dev.log('[AUTH] Erro no login: $e', name: 'AuthBloc', error: e);
-      if (e is DioException) {
-        dev.log('[AUTH] DioException type: ${e.type}', name: 'AuthBloc');
-        dev.log('[AUTH] DioException status: ${e.response?.statusCode}', name: 'AuthBloc');
-        dev.log('[AUTH] DioException response: ${e.response?.data}', name: 'AuthBloc');
-        dev.log('[AUTH] DioException message: ${e.message}', name: 'AuthBloc');
-      }
       String message = 'Erro ao fazer login';
       if (e is Exception) {
         message = _extractErrorMessage(e);
@@ -125,10 +114,76 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  Future<void> _onGoogleLoginRequested(
+    AuthGoogleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    dev.log('[AUTH] Google Sign-In iniciado...', name: 'AuthBloc');
+    emit(AuthLoading());
+    try {
+      // 1. Trigger Google Sign-In flow
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        dev.log('[AUTH] Google Sign-In cancelado pelo usuário', name: 'AuthBloc');
+        emit(AuthUnauthenticated());
+        return;
+      }
+
+      // 2. Get Google auth details
+      final googleAuth = await googleUser.authentication;
+      dev.log('[AUTH] Google token obtido, autenticando com Firebase...', name: 'AuthBloc');
+
+      // 3. Sign in to Firebase with Google credential
+      final credential = fb.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final fbUser = await fb.FirebaseAuth.instance.signInWithCredential(credential);
+      final idToken = await fbUser.user?.getIdToken();
+
+      if (idToken == null) {
+        throw Exception('Não foi possível obter o token do Firebase');
+      }
+
+      dev.log('[AUTH] Firebase autenticado, enviando para backend...', name: 'AuthBloc');
+
+      // 4. Send Firebase idToken to our backend
+      final response = await apiClient.post(
+        ApiConstants.googleAuth,
+        data: {
+          'idToken': idToken,
+          'name': googleUser.displayName ?? 'Usuário Google',
+          'email': googleUser.email,
+          'avatarUrl': googleUser.photoUrl,
+        },
+      );
+
+      final body = response.data['data'] ?? response.data;
+      final token = body['accessToken'];
+      await apiClient.saveToken(token);
+
+      final user = UserModel.fromJson(body['user']);
+      dev.log('[AUTH] Google login bem-sucedido para: ${user.email}', name: 'AuthBloc');
+      emit(AuthAuthenticated(user: user));
+    } catch (e) {
+      dev.log('[AUTH] Erro no Google Sign-In: $e', name: 'AuthBloc', error: e);
+      String message = 'Erro ao fazer login com Google';
+      if (e is Exception) {
+        message = _extractErrorMessage(e);
+      }
+      emit(AuthError(message: message));
+      emit(AuthUnauthenticated());
+    }
+  }
+
   Future<void> _onLogoutRequested(
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    try {
+      await _googleSignIn.signOut();
+      await fb.FirebaseAuth.instance.signOut();
+    } catch (_) {}
     await apiClient.clearToken();
     emit(AuthUnauthenticated());
   }

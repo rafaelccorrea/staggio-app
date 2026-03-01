@@ -9,6 +9,7 @@ class ApiConstants {
   static const String authRefresh = '/auth/refresh';
   static const String me = '/auth/me';
   static const String forgotPassword = '/auth/forgot-password';
+  static const String googleAuth = '/auth/google';
 
   // Users
   static const String profile = '/users/me';
@@ -36,6 +37,7 @@ class ApiConstants {
 
   // Stripe
   static const String stripeCheckout = '/stripe/checkout';
+  static const String stripeBuyCredits = '/stripe/buy-credits';
   static const String stripePortal = '/stripe/portal';
   static const String stripeWebhook = '/stripe/webhook';
 

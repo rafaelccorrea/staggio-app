@@ -11,6 +11,7 @@ class UserModel extends Equatable {
   final String plan;
   final int aiCreditsUsed;
   final int aiCreditsLimit;
+  final int bonusCredits;
 
   const UserModel({
     required this.id,
@@ -23,6 +24,7 @@ class UserModel extends Equatable {
     this.plan = 'free',
     this.aiCreditsUsed = 0,
     this.aiCreditsLimit = 5,
+    this.bonusCredits = 0,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class UserModel extends Equatable {
       plan: json['plan'] ?? 'free',
       aiCreditsUsed: json['aiCreditsUsed'] ?? 0,
       aiCreditsLimit: json['aiCreditsLimit'] ?? 5,
+      bonusCredits: json['bonusCredits'] ?? 0,
     );
   }
 
@@ -52,6 +55,7 @@ class UserModel extends Equatable {
       'plan': plan,
       'aiCreditsUsed': aiCreditsUsed,
       'aiCreditsLimit': aiCreditsLimit,
+      'bonusCredits': bonusCredits,
     };
   }
 
@@ -63,6 +67,7 @@ class UserModel extends Equatable {
     String? plan,
     int? aiCreditsUsed,
     int? aiCreditsLimit,
+    int? bonusCredits,
   }) {
     return UserModel(
       id: id,
@@ -75,15 +80,22 @@ class UserModel extends Equatable {
       plan: plan ?? this.plan,
       aiCreditsUsed: aiCreditsUsed ?? this.aiCreditsUsed,
       aiCreditsLimit: aiCreditsLimit ?? this.aiCreditsLimit,
+      bonusCredits: bonusCredits ?? this.bonusCredits,
     );
   }
 
   double get creditsPercentage =>
       aiCreditsLimit > 0 ? aiCreditsUsed / aiCreditsLimit : 0;
 
-  bool get hasCredits => aiCreditsUsed < aiCreditsLimit;
+  /// Verifica se o usuário tem créditos (mensais ou bônus)
+  bool get hasCredits => aiCreditsUsed < aiCreditsLimit || bonusCredits > 0;
 
+  /// Créditos mensais restantes
   int get aiCreditsRemaining => aiCreditsLimit - aiCreditsUsed;
+
+  /// Total de créditos disponíveis (mensais + bônus)
+  int get totalCreditsAvailable =>
+      (aiCreditsRemaining > 0 ? aiCreditsRemaining : 0) + bonusCredits;
 
   int get totalProperties => 0; // Updated from API
 
@@ -103,5 +115,6 @@ class UserModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, email, role, plan, aiCreditsUsed];
+  List<Object?> get props =>
+      [id, name, email, role, plan, aiCreditsUsed, bonusCredits];
 }

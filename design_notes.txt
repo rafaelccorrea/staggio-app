@@ -1,0 +1,27 @@
+DRIBBBLE LOGIN DESIGN INSPIRATION:
+
+Key trends observed:
+1. Dark mode backgrounds with gradient overlays (deep navy/dark blue)
+2. Large hero illustration or 3D element at top (40% of screen)
+3. Clean white card/form area at bottom with rounded corners
+4. Social login buttons (Google, Apple) with proper brand icons
+5. Minimal text, clear hierarchy
+6. Subtle animations on load
+7. Glass morphism effects on some designs
+
+DESIGN DIRECTION FOR STAGGIO LOGIN:
+- Dark navy/deep blue gradient background (matching splash screen)
+- Staggio logo PNG prominently displayed at top with glow effect
+- Subtle animated particles or gradient orbs in background
+- Clean white/frosted glass card for the form area
+- Proper Google icon (not generic), Apple icon
+- Smooth entrance animations
+- "Bem-vindo ao Staggio" as hero text
+- Tagline "IA para Corretores de Imóveis"
+
+COLOR PALETTE:
+- Background: #0A1628 → #0D2137 → #0F2B46 (dark gradient)
+- Primary: #1E88E5 (blue)
+- Accent: #00ACC1 → #26A69A (teal gradient, matching logo)
+- Card: White with 0.95 opacity
+- Text: White on dark, dark on card

@@ -1,0 +1,28 @@
+AUDIT FINDINGS:
+
+1. LOGO: staggio_logo.png (with text) and staggio_icon.png (icon only) exist in assets/images/
+   - Logo has gradient purple-to-teal, house + S + sparkle design
+   - Icon has same design in rounded square frame
+
+2. AUTH PERSISTENCE: Auth flow looks correct - AuthCheckRequested checks token on startup.
+   The issue is likely that flutter_secure_storage is working but the splash screen 
+   transitions too fast before the check completes. The _initialCheckDone flag should handle it.
+   Need to investigate if the token is actually being persisted properly.
+
+3. FIREBASE: Not configured at all - no google-services.json, no firebase deps in pubspec
+   Need: firebase_core, firebase_auth, google_sign_in
+
+4. SPLASH SCREEN: Currently inline in main.dart (_SplashScreen class). Shows "S" letter 
+   instead of actual logo PNG. Needs redesign with actual logo image.
+
+5. APP ICONS: Default Flutter icons exist but are the default Flutter logo, not Staggio icon.
+   Need flutter_launcher_icons to generate proper icons from staggio_icon.png.
+
+6. LOGIN SCREEN: Current design is basic purple gradient with card form. 
+   Google/Apple buttons are placeholders showing SnackBar "em breve".
+
+7. STRIPE: plans_screen already has checkout integration code added in previous session.
+   Need to add credit purchase packs.
+
+8. BACKEND: Has /auth/login, /auth/register, /auth/me, /properties, /storage/upload, 
+   /stripe/checkout, /stripe/portal endpoints.

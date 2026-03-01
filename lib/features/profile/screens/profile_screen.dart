@@ -13,6 +13,7 @@ import '../../settings/screens/settings_screen.dart';
 import '../../help/screens/help_screen.dart';
 import '../../about/screens/about_screen.dart';
 import 'edit_profile_screen.dart';
+import '../../subscription/screens/buy_credits_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -181,6 +182,19 @@ class ProfileScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const PlansScreen()),
+                      );
+                    },
+                  ),
+                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  _buildMenuItem(
+                    context,
+                    icon: Iconsax.flash_circle,
+                    title: 'Comprar Créditos',
+                    subtitle: 'Créditos extras avulsos',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BuyCreditsScreen()),
                       );
                     },
                   ),

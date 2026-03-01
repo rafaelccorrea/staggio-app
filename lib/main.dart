@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
 import 'core/network/api_client.dart';
 import 'features/auth/bloc/auth_bloc.dart';
@@ -16,12 +17,19 @@ import 'features/shell/screens/app_shell.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('[FIREBASE] Erro ao inicializar: $e');
+  }
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: AppColors.surface,
-      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF0A1628),
+      systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
 
@@ -69,6 +77,18 @@ class _AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<_AppRoot> {
   bool _initialCheckDone = false;
+  bool _splashMinTimePassed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Minimum splash screen duration of 2.5 seconds
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        setState(() => _splashMinTimePassed = true);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +103,8 @@ class _AppRootState extends State<_AppRoot> {
           current is AuthAuthenticated ||
           current is AuthUnauthenticated,
       builder: (context, state) {
-        if (!_initialCheckDone || state is AuthInitial) {
+        // Show splash until both auth check is done AND minimum time has passed
+        if (!_initialCheckDone || !_splashMinTimePassed || state is AuthInitial) {
           return const _SplashScreen();
         }
         if (state is AuthAuthenticated) {
@@ -108,25 +129,25 @@ class _SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<_SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
-  late AnimationController _rotateController;
+  late AnimationController _glowController;
 
   @override
   void initState() {
     super.initState();
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
     )..repeat(reverse: true);
-    _rotateController = AnimationController(
+    _glowController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
-    )..repeat();
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _pulseController.dispose();
-    _rotateController.dispose();
+    _glowController.dispose();
     super.dispose();
   }
 
@@ -149,6 +170,7 @@ class _SplashScreenState extends State<_SplashScreen>
         ),
         child: Stack(
           children: [
+            // Animated glow orb top-right
             Positioned(
               top: -80,
               right: -80,
@@ -162,8 +184,8 @@ class _SplashScreenState extends State<_SplashScreen>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.primary.withValues(alpha: 0.15),
-                          AppColors.primary.withValues(alpha: 0.0),
+                          const Color(0xFF1E88E5).withValues(alpha: 0.15),
+                          const Color(0xFF1E88E5).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -171,6 +193,7 @@ class _SplashScreenState extends State<_SplashScreen>
                 },
               ),
             ),
+            // Animated glow orb bottom-left
             Positioned(
               bottom: -100,
               left: -100,
@@ -184,8 +207,8 @@ class _SplashScreenState extends State<_SplashScreen>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.accent.withValues(alpha: 0.1),
-                          AppColors.accent.withValues(alpha: 0.0),
+                          const Color(0xFF26A69A).withValues(alpha: 0.12),
+                          const Color(0xFF26A69A).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -193,44 +216,46 @@ class _SplashScreenState extends State<_SplashScreen>
                 },
               ),
             ),
+            // Main content
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF1E88E5),
-                          Color(0xFF00ACC1),
-                          Color(0xFF26A69A),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(36),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.4),
-                          blurRadius: 40,
-                          offset: const Offset(0, 20),
+                  // Logo with glow effect
+                  AnimatedBuilder(
+                    animation: _glowController,
+                    builder: (context, child) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF1E88E5).withValues(
+                                alpha: 0.2 + (_glowController.value * 0.15),
+                              ),
+                              blurRadius: 40 + (_glowController.value * 20),
+                              spreadRadius: 5,
+                            ),
+                            BoxShadow(
+                              color: const Color(0xFF26A69A).withValues(
+                                alpha: 0.15 + (_glowController.value * 0.1),
+                              ),
+                              blurRadius: 60 + (_glowController.value * 30),
+                              spreadRadius: 10,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'S',
-                        style: TextStyle(
-                          fontSize: 56,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          fontFamily: 'Poppins',
-                          letterSpacing: -2,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(36),
+                          child: Image.asset(
+                            'assets/images/staggio_icon.png',
+                            width: 140,
+                            height: 140,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   )
                       .animate()
                       .fadeIn(duration: 800.ms)
@@ -240,11 +265,12 @@ class _SplashScreenState extends State<_SplashScreen>
                         curve: Curves.elasticOut,
                         duration: 1200.ms,
                       ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
+                  // App name
                   const Text(
                     'Staggio',
                     style: TextStyle(
-                      fontSize: 42,
+                      fontSize: 44,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                       fontFamily: 'Poppins',
@@ -254,40 +280,39 @@ class _SplashScreenState extends State<_SplashScreen>
                       .animate()
                       .fadeIn(delay: 400.ms, duration: 600.ms)
                       .slideY(begin: 0.5),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'IA para Corretores de Imóveis',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF90CAF9),
-                      letterSpacing: 0.5,
+                  const SizedBox(height: 10),
+                  // Tagline
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Color(0xFF64B5F6), Color(0xFF4DD0E1)],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'IA para Corretores de Imóveis',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        letterSpacing: 1.0,
+                      ),
                     ),
                   )
                       .animate()
                       .fadeIn(delay: 700.ms, duration: 600.ms)
                       .slideY(begin: 0.3),
-                  const SizedBox(height: 56),
+                  const SizedBox(height: 60),
+                  // Loading indicator
                   SizedBox(
-                    width: 36,
-                    height: 36,
+                    width: 32,
+                    height: 32,
                     child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: AppColors.primary.withValues(alpha: 0.7),
+                      strokeWidth: 2.5,
+                      color: const Color(0xFF1E88E5).withValues(alpha: 0.6),
                     ),
                   ).animate().fadeIn(delay: 1000.ms, duration: 500.ms),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Carregando...',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF64B5F6),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ).animate().fadeIn(delay: 1200.ms, duration: 500.ms),
                 ],
               ),
             ),
+            // Version
             Positioned(
               bottom: 40,
               left: 0,

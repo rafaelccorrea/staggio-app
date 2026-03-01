@@ -32,6 +32,11 @@ dependencies:
   dio: ^5.8.0+1
   json_annotation: ^4.9.0
 
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.1
+  google_sign_in: ^6.3.0
+
   # Storage
   shared_preferences: ^2.5.3
   flutter_secure_storage: ^9.2.4
@@ -55,6 +60,29 @@ dev_dependencies:
   json_serializable: ^6.9.4
   bloc_test: ^10.0.0
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.5
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/staggio_icon.png"
+  adaptive_icon_background: "#0A1628"
+  adaptive_icon_foreground: "assets/images/staggio_icon.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#0A1628"
+  image: "assets/images/staggio_logo.png"
+  color_dark: "#0A1628"
+  image_dark: "assets/images/staggio_logo.png"
+  android_12:
+    color: "#0A1628"
+    icon_background_color: "#0A1628"
+    image: "assets/images/staggio_icon.png"
+  ios: true
+  android: true
 
 flutter:
   uses-material-design: true

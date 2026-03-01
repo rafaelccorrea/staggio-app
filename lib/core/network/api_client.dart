@@ -3,10 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/api_constants.dart';
 
 class ApiClient {
+  static final ApiClient _instance = ApiClient._internal();
+  factory ApiClient() => _instance;
+
   late final Dio _dio;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  ApiClient() {
+  ApiClient._internal() {
     _dio = Dio(BaseOptions(
       baseUrl: ApiConstants.baseUrl,
       connectTimeout: ApiConstants.connectTimeout,
@@ -28,7 +31,6 @@ class ApiClient {
       onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
           await _storage.delete(key: 'access_token');
-          // Navigate to login - handled by BLoC
         }
         return handler.next(error);
       },
