@@ -83,7 +83,7 @@ class AiToolCard extends StatelessWidget {
               top: 8,
               right: 8,
               child: GestureDetector(
-                onTap: (e) {
+                onTap: () {
                   final featureInfo = AiFeatures.getFeatureInfo(featureKey!);
                   if (featureInfo != null) {
                     showModalBottomSheet(
