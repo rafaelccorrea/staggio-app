@@ -86,18 +86,22 @@ class ShowcaseSection extends StatelessWidget {
             VideoItem(
               url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_house_cinematic_d46fb731.mp4',
               title: 'Tour Cinematográfico - Casa Moderna',
+              prompt: 'Create a 12-second cinematic real estate video showcasing a luxury modern house. Start with an exterior wide shot of a contemporary home with large floor-to-ceiling windows at golden hour sunset. Smooth camera movement with professional cinematography.',
             ),
             VideoItem(
               url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_land_transformation_00e2632a.mp4',
               title: 'Transformação - Terreno para Casa',
+              prompt: 'Create a 12-second cinematic real estate video of a luxury residential property interior. Start with a wide shot of a modern open-concept living room with high ceilings and large windows overlooking a landscape.',
             ),
             VideoItem(
-              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondcinematicrealestatevideoofamodernhouseforsaleShotbreakdown-5secondssmoothdroneshotappro_dce0c79f.mp4',
-              title: 'Drone Tour - Imóvel Premium',
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_1_153fddcf.mp4',
+              title: 'Tour Cinematográfico - Casa Moderna',
+              prompt: 'Create a 12-second cinematic real estate video showcasing a luxury modern house. Start with an exterior wide shot of a contemporary home with large floor-to-ceiling windows at golden hour sunset.',
             ),
             VideoItem(
-              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondarchitecturaltransformationvideoSinglefixedcameraanglethroughouttheentirevideoConsistentdaylightlightingandsamesundirectionStage1(10seconds)emptygrassylot_da23cffb.mp4',
-              title: 'Visualização Arquitetônica 3D',
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_2_8aa6a5e0.mp4',
+              title: 'Tour Interior Luxuoso',
+              prompt: 'Create a 12-second cinematic real estate video of a luxury residential property interior. Start with a wide shot of a modern open-concept living room with high ceilings and large windows.',
             ),
           ],
         ),
@@ -108,16 +112,13 @@ class ShowcaseSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.black.withValues(alpha: 0.03),
-              borderRadius: BorderRadius.circular(20),
+              gradient: AppColors.cardGradient,
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.06),
+                color: Theme.of(context).dividerColor,
+                width: 1,
               ),
             ),
             child: Column(
@@ -126,104 +127,49 @@ class ShowcaseSection extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      width: 44,
-                      height: 44,
+                      width: 32,
+                      height: 32,
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(14),
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Iconsax.document_text, color: Colors.white, size: 22),
+                      child: const Icon(Iconsax.document_text, color: Colors.white, size: 16),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Descrições Automáticas',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).textTheme.bodyLarge?.color,
-                            ),
-                          ),
-                          Text(
-                            'Textos profissionais em segundos',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                            ),
-                          ),
-                        ],
+                    const SizedBox(width: 10),
+                    const Text(
+                      'Descrições IA',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.03)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : Colors.black.withValues(alpha: 0.06),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Iconsax.quote_up, size: 16, color: AppColors.primary),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Exemplo gerado pela IA',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Apartamento de luxo com 3 suítes, vista panorâmica para o mar. '
-                        'Acabamento premium com piso em porcelanato, cozinha gourmet integrada '
-                        'e ampla varanda com churrasqueira. Localizado no coração da Barra da Tijuca, '
-                        'a poucos minutos do Shopping Village Mall...',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                          height: 1.6,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                const SizedBox(height: 10),
+                const Text(
+                  'Gere descrições profissionais para seus anúncios em segundos',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                    height: 1.5,
                   ),
                 ),
               ],
             ),
           ),
         ),
-
-        const SizedBox(height: 8),
       ],
     );
   }
 }
 
-class _BeforeAfterCard extends StatelessWidget {
+class _BeforeAfterCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final String beforeImage;
   final String afterImage;
-  final LinearGradient gradient;
+  final Gradient gradient;
   final bool isDark;
 
   const _BeforeAfterCard({
@@ -236,137 +182,108 @@ class _BeforeAfterCard extends StatelessWidget {
   });
 
   @override
+  State<_BeforeAfterCard> createState() => _BeforeAfterCardState();
+}
+
+class _BeforeAfterCardState extends State<_BeforeAfterCard> {
+  bool _showAfter = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 260,
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.black.withValues(alpha: 0.06),
+    return GestureDetector(
+      onTap: () => setState(() => _showAfter = !_showAfter),
+      child: Container(
+        width: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: widget.gradient,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        boxShadow: isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.06 * 0.3) : Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Before/After images
-          SizedBox(
-            height: 160,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20)),
-                        child: Image.network(
-                          beforeImage,
-                          width: double.infinity,
-                          height: 160,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: Colors.grey.withValues(alpha: 0.3),
-                            child: const Center(child: Icon(Iconsax.image, color: Colors.grey)),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 6,
-                        left: 6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.6 * 0.3) : Colors.black.withValues(alpha: 0.6),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'ANTES',
-                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(width: 2, height: 160, color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.2)),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(topRight: Radius.circular(20)),
-                        child: Image.network(
-                          afterImage,
-                          width: double.infinity,
-                          height: 160,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: Colors.grey.withValues(alpha: 0.3),
-                            child: const Center(child: Icon(Iconsax.image, color: Colors.grey)),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 6,
-                        right: 6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            gradient: gradient,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'DEPOIS',
-                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+        child: Stack(
+          children: [
+            // Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                _showAfter ? widget.afterImage : widget.beforeImage,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
             ),
-          ),
-          // Title and subtitle
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                  ),
+
+            // Overlay
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.6),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+
+            // Content
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.subtitle,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Tap indicator
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  _showAfter ? 'Depois' : 'Antes',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-

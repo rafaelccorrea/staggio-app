@@ -18,8 +18,9 @@ class VideoCarousel extends StatefulWidget {
 class VideoItem {
   final String url;
   final String title;
+  final String? prompt;
 
-  VideoItem({required this.url, required this.title});
+  VideoItem({required this.url, required this.title, this.prompt});
 }
 
 class _VideoCarouselState extends State<VideoCarousel> {
@@ -50,6 +51,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
         if (!controller.value.isInitialized) {
           await controller.initialize();
           controller.setLooping(true);
+          controller.setVolume(0.0); // Mute by default
         }
       } catch (e) {
         debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar vídeo: $e');
@@ -149,7 +151,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
             children: [
               // Video Carousel
               SizedBox(
-                height: 280,
+                height: 220,
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: (index) {
@@ -182,7 +184,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          color: Colors.black,
+                          color: Colors.transparent,
                         ),
                         child: Stack(
                           alignment: Alignment.center,
@@ -256,7 +258,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                 ),
                               ),
 
-                            // Video Title (always visible)
+                            // Video Title and Prompt Button (always visible)
                             Positioned(
                               bottom: 0,
                               left: 0,
@@ -268,7 +270,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      Colors.black.withValues(alpha: 0.7),
+                                      Colors.black.withValues(alpha: 0.85),
                                     ],
                                   ),
                                   borderRadius: const BorderRadius.only(
@@ -276,16 +278,74 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     bottomRight: Radius.circular(16),
                                   ),
                                 ),
-                                padding: const EdgeInsets.all(12),
-                                child: Text(
-                                  widget.videos[index].title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            widget.videos[index].title,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        if (widget.videos[index].prompt != null)
+                                          GestureDetector(
+                                            onTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (_) => Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      const Text(
+                                                        'IA Prompt',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 12),
+                                                      Text(
+                                                        widget.videos[index].prompt!,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          height: 1.5,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withValues(alpha: 0.2),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(
+                                                Iconsax.code,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -321,7 +381,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
           );
         } else {
           return SizedBox(
-            height: 280,
+            height: 220,
             child: Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
