@@ -66,6 +66,7 @@ class VideoCacheService {
           final controller = VideoPlayerController.networkUrl(Uri.parse(url));
           await controller.initialize();
           controller.setLooping(true);
+          controller.setVolume(0.0);
           _cache[url] = controller;
           dev.log('[VIDEO_CACHE] Vídeo pré-carregado: $url', name: 'VideoCacheService');
         } catch (e) {

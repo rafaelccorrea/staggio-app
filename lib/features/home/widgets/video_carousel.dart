@@ -38,34 +38,17 @@ class _VideoCarouselState extends State<VideoCarousel> {
       widget.videos.length,
       (index) => VideoCacheService.getController(widget.videos[index].url),
     );
-    _initializeVideos();
+    // Inicializa em background sem bloquear a UI
+    Future.microtask(() => _initializeAll());
   }
 
-  Future<void> _initializeVideos() async {
-    if (_controllers.isEmpty || _disposed) return;
-
-    try {
-      final firstController = _controllers[0];
-      if (!firstController.value.isInitialized) {
-        await firstController.initialize().timeout(
-          const Duration(seconds: 20),
-          onTimeout: () {
-            debugPrint('[VIDEO_CAROUSEL] Timeout ao inicializar primeiro video');
-          },
-        );
-        firstController.setLooping(true);
-        firstController.setVolume(0.0);
-      }
-      if (mounted && !_disposed && !firstController.value.isPlaying) {
-        firstController.play();
-      }
-    } catch (e) {
-      debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar primeiro video: $e');
+  Future<void> _initializeAll() async {
+    for (int i = 0; i < _controllers.length; i++) {
+      if (_disposed) return;
+      await _initializeControllerAt(i);
+      // Pequena pausa entre cada vídeo para não sobrecarregar
+      if (i == 0) await Future.delayed(const Duration(milliseconds: 300));
     }
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!_disposed) _preloadOtherVideos();
-    });
   }
 
   Future<void> _initializeControllerAt(int index) async {
@@ -73,36 +56,20 @@ class _VideoCarouselState extends State<VideoCarousel> {
     try {
       final controller = _controllers[index];
       if (!controller.value.isInitialized) {
-        await controller.initialize().timeout(const Duration(seconds: 20));
-        controller.setLooping(true);
-        controller.setVolume(0.0);
+        await controller.initialize().timeout(
+          const Duration(seconds: 20),
+          onTimeout: () {
+            debugPrint('[VIDEO_CAROUSEL] Timeout video $index');
+          },
+        );
       }
-      if (mounted && !_disposed && index == _currentIndex && !controller.value.isPlaying) {
+      controller.setLooping(true);
+      controller.setVolume(0.0);
+      if (mounted && !_disposed && index == 0 && !controller.value.isPlaying) {
         controller.play();
       }
     } catch (e) {
-      debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar controller[$index]: $e');
-    }
-  }
-
-  Future<void> _preloadOtherVideos() async {
-    for (int i = 1; i < _controllers.length; i++) {
-      if (_disposed) return;
-      try {
-        final controller = _controllers[i];
-        if (!controller.value.isInitialized) {
-          await controller.initialize().timeout(
-            const Duration(seconds: 12),
-            onTimeout: () {
-              debugPrint('[VIDEO_CAROUSEL] Timeout ao pre-carregar video $i');
-            },
-          );
-          controller.setLooping(true);
-          controller.setVolume(0.0);
-        }
-      } catch (e) {
-        debugPrint('[VIDEO_CAROUSEL] Erro ao pre-carregar video $i: $e');
-      }
+      debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar video $index: $e');
     }
   }
 

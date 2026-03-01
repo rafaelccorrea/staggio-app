@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                  ).animate().fadeIn(delay: 500.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  ).animate().fadeIn(delay: 100.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9)),
                   AiToolCard(
                     title: 'Visão de\nTerreno',
                     subtitle: 'Visualize construções',
@@ -360,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                  ).animate().fadeIn(delay: 600.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  ).animate().fadeIn(delay: 150.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9)),
                   AiToolCard(
                     title: 'Descrição\nIA',
                     subtitle: 'Textos profissionais',
@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                  ).animate().fadeIn(delay: 700.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  ).animate().fadeIn(delay: 200.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9)),
                   AiToolCard(
                     title: 'Melhorar\nFoto',
                     subtitle: 'Fotos profissionais',
@@ -394,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                  ).animate().fadeIn(delay: 800.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  ).animate().fadeIn(delay: 250.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9)),
                   AiToolCard(
                     title: 'Vídeo\nCinema',
                     subtitle: 'Vídeos profissionais',
@@ -417,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                  ).animate().fadeIn(delay: 900.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  ).animate().fadeIn(delay: 300.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9)),
                 ]),
               ),
             ),
