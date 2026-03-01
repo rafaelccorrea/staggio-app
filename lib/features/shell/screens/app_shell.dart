@@ -267,22 +267,23 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-                borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Ferramentas de IA',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+              SizedBox(height: 20),
+              Text(
+                'Ferramentas de IA',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             const SizedBox(height: 20),
             _buildAiToolItem(
               context,
@@ -374,8 +375,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
                 );
               },
             ),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
         ),
       ),
     );

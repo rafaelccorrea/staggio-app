@@ -113,12 +113,14 @@ class _LoginScreenState extends State<LoginScreen>
           }
           if (state is AuthAuthenticated) {
             // Save credentials for biometric login
-            BiometricService.saveCredentials(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            );
-            // Navigate to home (app shell will handle this via main.dart)
-            Navigator.of(context).pushReplacementNamed('/');
+            if (_emailController.text.trim().isNotEmpty) {
+              BiometricService.saveCredentials(
+                email: _emailController.text.trim(),
+                password: _passwordController.text,
+              );
+            }
+            // Navigation is handled by BlocConsumer in main.dart
+            // No manual navigation needed here
           }
         },
         child: Container(

@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import '../../data/models/user_model.dart';
 import '../../features/subscription/screens/plans_screen.dart';
 import '../theme/app_theme.dart';
+import '../enums/plan_type.dart';
 
 /// Plan-based feature gating
 class PlanGating {
   /// Features available per plan
-  static const Map<String, List<String>> planFeatures = {
-    'free': ['staging', 'description'],
-    'starter': ['staging', 'description', 'chat'],
-    'pro': ['staging', 'description', 'chat', 'terrain_vision', 'photo_enhance'],
-    'agency': ['staging', 'description', 'chat', 'terrain_vision', 'photo_enhance', 'video_generation'],
+  static const Map<PlanType, List<String>> planFeatures = {
+    PlanType.free: ['staging', 'description'],
+    PlanType.starter: ['staging', 'description', 'chat'],
+    PlanType.pro: ['staging', 'description', 'chat', 'terrain_vision', 'photo_enhance'],
+    PlanType.agency: ['staging', 'description', 'chat', 'terrain_vision', 'photo_enhance', 'video_generation'],
   };
 
   /// Check if user has access to a feature
   static bool hasAccess(UserModel? user, String feature) {
     if (user == null) return false;
     final plan = user.plan;
-    final features = planFeatures[plan] ?? planFeatures['free']!;
+    final features = planFeatures[plan] ?? planFeatures[PlanType.free]!;
     return features.contains(feature);
   }
 
