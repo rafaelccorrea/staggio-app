@@ -1,16 +1,17 @@
 class ApiConstants {
-  static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://192.168.1.4:3000/api/v1';
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 
   // Auth
   static const String login = '/auth/login';
   static const String register = '/auth/register';
+  static const String authRefresh = '/auth/refresh';
   static const String me = '/auth/me';
 
   // Users
-  static const String profile = '/users/profile';
-  static const String dashboard = '/users/dashboard';
+  static const String profile = '/users/me';
+  static const String dashboard = '/users/me/stats';
 
   // Properties
   static const String properties = '/properties';
@@ -25,12 +26,16 @@ class ApiConstants {
 
   // Subscriptions
   static const String plans = '/subscriptions/plans';
-  static const String currentSubscription = '/subscriptions/current';
-  static const String usage = '/subscriptions/usage';
+  static const String currentSubscription = '/subscriptions/me';
+
+  // Generations
+  static const String generations = '/generations';
+  static const String generationStats = '/generations/stats';
 
   // Stripe
   static const String stripeCheckout = '/stripe/checkout';
   static const String stripePortal = '/stripe/portal';
+  static const String stripeWebhook = '/stripe/webhook';
 
   // Storage
   static const String upload = '/storage/upload';
