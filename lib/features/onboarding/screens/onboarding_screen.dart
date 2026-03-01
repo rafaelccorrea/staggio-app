@@ -35,16 +35,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         'https://cdn.example.com/staggio_video_2.mp4',
       ];
       
-      for (final url in videoUrls) {
-        Future.delayed(const Duration(milliseconds: 100), () {
-          try {
-            VideoCacheService.getController(url);
-            debugPrint('[ONBOARDING] Preloaded video: $url');
-          } catch (e) {
-            debugPrint('[ONBOARDING] Error preloading $url: $e');
-          }
-        });
-      }
+      // Use the VideoCacheService preloadVideos method which handles caching
+      await VideoCacheService.preloadVideos(videoUrls);
+      debugPrint('[ONBOARDING] Videos preloaded successfully');
     } catch (e) {
       debugPrint('[ONBOARDING] Error in _preloadVideos: $e');
     }

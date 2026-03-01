@@ -5,6 +5,7 @@ class VideoCacheService {
   static final VideoCacheService _instance = VideoCacheService._internal();
   static final Map<String, VideoPlayerController> _cache = {};
   static bool _isPreloading = false;
+  static final Set<String> _preloadedUrls = {};
 
   factory VideoCacheService() {
     return _instance;
@@ -45,8 +46,18 @@ class VideoCacheService {
     }
   }
 
+  /// Check if videos are already preloaded
+  static bool areVideosPreloaded(List<String> videoUrls) {
+    return videoUrls.every((url) => _preloadedUrls.contains(url));
+  }
+
   /// Pre-load videos in background
   static Future<void> preloadVideos(List<String> videoUrls) async {
+    // Skip if already preloaded
+    if (areVideosPreloaded(videoUrls)) {
+      dev.log('[VIDEO_CACHE] Videos already preloaded, skipping', name: 'VideoCacheService');
+      return;
+    }
     if (_isPreloading) {
       dev.log('[VIDEO_CACHE] Pré-carregamento já em progresso', name: 'VideoCacheService');
       return;
@@ -68,6 +79,7 @@ class VideoCacheService {
           controller.setLooping(true);
           controller.setVolume(0.0);
           _cache[url] = controller;
+          _preloadedUrls.add(url); // Mark as preloaded
           dev.log('[VIDEO_CACHE] Vídeo pré-carregado: $url', name: 'VideoCacheService');
         } catch (e) {
           dev.log('[VIDEO_CACHE] Erro ao pré-carregar $url: $e', name: 'VideoCacheService', error: e);
