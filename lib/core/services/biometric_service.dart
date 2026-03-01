@@ -41,6 +41,16 @@ class BiometricService {
     await prefs.setBool(_biometricPromptShownKey, true);
   }
 
+  /// Save credentials for biometric login (without showing prompt)
+  static Future<void> saveCredentials({
+    required String email,
+    required String password,
+  }) async {
+    const storage = FlutterSecureStorage();
+    await storage.write(key: _biometricEmailKey, value: email);
+    await storage.write(key: _biometricPasswordKey, value: password);
+  }
+
   /// Enable biometric login and save credentials
   static Future<void> enable(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();

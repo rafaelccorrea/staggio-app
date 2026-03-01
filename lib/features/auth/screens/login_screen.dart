@@ -54,12 +54,28 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _onBiometricLogin() async {
-    final credentials = await BiometricService.authenticate();
-    if (credentials != null && mounted) {
-      context.read<AuthBloc>().add(AuthLoginRequested(
-        email: credentials['email']!,
-        password: credentials['password']!,
-      ));
+    try {
+      final credentials = await BiometricService.authenticate();
+      if (credentials != null && mounted) {
+        // Trigger login with biometric credentials
+        context.read<AuthBloc>().add(AuthLoginRequested(
+          email: credentials['email']!,
+          password: credentials['password']!,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao usar biometria'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -96,12 +112,13 @@ class _LoginScreenState extends State<LoginScreen>
             );
           }
           if (state is AuthAuthenticated) {
-            // Show biometric prompt after successful login
-            BiometricService.showEnablePrompt(
-              context,
+            // Save credentials for biometric login
+            BiometricService.saveCredentials(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
+            // Navigate to home (app shell will handle this via main.dart)
+            Navigator.of(context).pushReplacementNamed('/');
           }
         },
         child: Container(
