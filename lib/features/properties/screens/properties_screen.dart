@@ -187,7 +187,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                  padding: EdgeInsets.fromLTRB(24, 20, 24, 0),
                   child: Row(
                     children: [
                       Expanded(
@@ -300,7 +300,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
 
               // Loading state
               if (_isLoading)
-                const SliverFillRemaining(
+                SliverFillRemaining(
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -320,11 +320,11 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Iconsax.warning_2, size: 48, color: AppColors.error),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(
                           _errorMessage!,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.textSecondary),
+                          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
@@ -341,12 +341,12 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                 if (_allProperties.isNotEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                      padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
                       child: Text(
                         '${_filteredProperties.length} imóve${_filteredProperties.length == 1 ? 'l' : 'is'} encontrado${_filteredProperties.length == 1 ? '' : 's'}',
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textTertiary,
+                          color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -364,23 +364,23 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceVariant,
+                              color: Theme.of(context).dividerColor,
                               borderRadius: BorderRadius.circular(32),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Iconsax.home_2,
                               size: 48,
-                              color: AppColors.textTertiary,
+                              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20),
                           Text(
                             _allProperties.isEmpty
                                 ? 'Nenhum imóvel cadastrado'
                                 : 'Nenhum resultado encontrado',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             _allProperties.isEmpty
                                 ? 'Adicione seu primeiro imóvel\npara começar a usar a IA'
@@ -433,16 +433,16 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
 
   Widget _buildPropertyCard(BuildContext context, PropertyModel property) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.surfaceVariant),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -453,7 +453,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
           Container(
             height: 180,
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: Theme.of(context).dividerColor,
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -461,14 +461,14 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
               children: [
                 if (property.images.isNotEmpty)
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     child: Image.network(
                       property.images.first,
                       width: double.infinity,
                       height: 180,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Center(
-                        child: Icon(Iconsax.image, size: 48, color: AppColors.textTertiary),
+                        child: Icon(Iconsax.image, size: 48, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                       ),
                     ),
                   )
@@ -477,7 +477,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                     child: Icon(
                       Iconsax.image,
                       size: 48,
-                      color: AppColors.textTertiary,
+                      color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                     ),
                   ),
                 // Type badge
@@ -526,31 +526,31 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   property.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                   ),
                 ),
                 if (property.address != null) ...[
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Iconsax.location,
-                          size: 14, color: AppColors.textTertiary),
-                      const SizedBox(width: 4),
+                      Icon(Iconsax.location,
+                          size: 14, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
+                      SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           '${property.address}${property.city != null ? ', ${property.city}' : ''}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.textTertiary,
+                            color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -638,14 +638,14 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
 
   Widget _buildPropertyInfo(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12),
+      padding: EdgeInsets.only(left: 12),
       child: Row(
         children: [
           Icon(icon, size: 14, color: AppColors.textTertiary),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
@@ -682,18 +682,18 @@ class _PropertyDetailSheet extends StatelessWidget {
             children: [
               // Handle
               Container(
-                margin: const EdgeInsets.only(top: 12),
+                margin: EdgeInsets.only(top: 12),
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -702,7 +702,7 @@ class _PropertyDetailSheet extends StatelessWidget {
                         height: 220,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceVariant,
+                          color: Theme.of(context).dividerColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: property.images.isNotEmpty
@@ -713,26 +713,26 @@ class _PropertyDetailSheet extends StatelessWidget {
                                   width: double.infinity,
                                   height: 220,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Center(
+                                  errorBuilder: (_, __, ___) => Center(
                                     child: Icon(Iconsax.image,
-                                        size: 64, color: AppColors.textTertiary),
+                                        size: 64, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                                   ),
                                 ),
                               )
-                            : const Center(
+                            : Center(
                                 child: Icon(Iconsax.image,
-                                    size: 64, color: AppColors.textTertiary),
+                                    size: 64, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                               ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Title and price
                       Text(
                         property.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -744,21 +744,21 @@ class _PropertyDetailSheet extends StatelessWidget {
                           color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       // Location
                       if (property.address != null)
                         Row(
                           children: [
-                            const Icon(Iconsax.location,
-                                size: 18, color: AppColors.textTertiary),
-                            const SizedBox(width: 8),
+                            Icon(Iconsax.location,
+                                size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 '${property.address}${property.neighborhood != null ? ', ${property.neighborhood}' : ''}${property.city != null ? ' - ${property.city}' : ''}${property.state != null ? '/${property.state}' : ''}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                                 ),
                               ),
                             ),
@@ -786,24 +786,24 @@ class _PropertyDetailSheet extends StatelessWidget {
                         ],
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // Description
                       if (property.description != null) ...[
-                        const Text(
+                        Text(
                           'Descrição',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           property.description!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                             height: 1.6,
                           ),
                         ),
@@ -811,7 +811,7 @@ class _PropertyDetailSheet extends StatelessWidget {
 
                       // AI Description
                       if (property.aiDescription != null) ...[
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -839,12 +839,12 @@ class _PropertyDetailSheet extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 property.aiDescription!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                                   height: 1.5,
                                 ),
                               ),
@@ -982,10 +982,10 @@ class _PropertyDetailSheet extends StatelessWidget {
           ),
           child: Icon(icon, color: AppColors.primary, size: 24),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -993,7 +993,7 @@ class _PropertyDetailSheet extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             color: AppColors.textTertiary,
           ),

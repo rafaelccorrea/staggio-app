@@ -138,17 +138,17 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(height: 20),
+            Text(
               'Adicionar Fotos',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 20),
@@ -374,7 +374,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     minHeight: _selectedPhotos.isEmpty ? 160 : 120,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
+                    color: Theme.of(context).dividerColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.primary.withValues(alpha: 0.3),
@@ -388,14 +388,14 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                           children: [
                             const SizedBox(height: 24),
                             Icon(Iconsax.camera, size: 40, color: AppColors.primary.withValues(alpha: 0.5)),
-                            const SizedBox(height: 8),
-                            const Text(
+                            SizedBox(height: 8),
+                            Text(
                               'Adicionar Fotos',
-                              style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary, fontWeight: FontWeight.w500),
                             ),
-                            const Text(
+                            Text(
                               'Toque para selecionar ou tirar foto',
-                              style: TextStyle(color: AppColors.textTertiary, fontSize: 12),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary, fontSize: 12),
                             ),
                             const SizedBox(height: 24),
                           ],
@@ -484,12 +484,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   },
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 '${_selectedPhotos.length} foto${_selectedPhotos.length == 1 ? '' : 's'} selecionada${_selectedPhotos.length == 1 ? '' : 's'}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.textTertiary,
+                                  color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                                 ),
                               ),
                             ],

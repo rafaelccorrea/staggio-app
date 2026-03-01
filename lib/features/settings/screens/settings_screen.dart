@@ -62,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Configurações'),
         leading: IconButton(
@@ -208,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text(
               'Staggio v$_appVersion',
               style: TextStyle(
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                 fontSize: 13,
               ),
             ),
@@ -228,7 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text(
             title.toUpperCase(),
             style: TextStyle(
-              color: AppColors.textTertiary,
+              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -237,7 +237,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -274,7 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Icon(icon, color: AppColors.primary, size: 20),
       ),
       title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)),
       trailing: Switch.adaptive(
         value: value,
         onChanged: onChanged,
@@ -313,7 +313,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           color: isDestructive ? AppColors.error : AppColors.textPrimary,
         ),
       ),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)),
       trailing: Icon(Iconsax.arrow_right_3,
           size: 18, color: isDestructive ? AppColors.error : AppColors.textTertiary),
     );

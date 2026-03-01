@@ -158,7 +158,7 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                   height: 220,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
+                    color: Theme.of(context).dividerColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.primary.withValues(alpha: 0.3),
@@ -170,10 +170,10 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Iconsax.camera, size: 48, color: AppColors.primary.withValues(alpha: 0.5)),
-                      const SizedBox(height: 12),
-                      const Text(
+                      SizedBox(height: 12),
+                      Text(
                         'Toque para selecionar uma foto',
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -291,11 +291,11 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
 
             // Result
             if (_resultImageUrl != null) ...[
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
               Row(
                 children: [
                   const Icon(Iconsax.tick_circle, color: AppColors.success, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text('Resultado', style: Theme.of(context).textTheme.titleMedium),
                 ],
               ),

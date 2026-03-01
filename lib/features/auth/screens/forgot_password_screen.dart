@@ -140,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
@@ -169,20 +169,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Digite seu email',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Enviaremos um link para redefinir sua senha',
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 24),
@@ -197,14 +197,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               prefixIcon: Icon(Iconsax.sms,
                   color: AppColors.primary.withValues(alpha: 0.7)),
               filled: true,
-              fillColor: const Color(0xFFF8F7FF),
+              fillColor: Theme.of(context).inputDecorationTheme.fillColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.surfaceVariant),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -272,22 +272,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             size: 32,
           ),
         ),
-        const SizedBox(height: 20),
-        const Text(
+        SizedBox(height: 20),
+        Text(
           'Verifique seu email',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           'Enviamos um link de recuperação para\n${_emailController.text}',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
             height: 1.5,
           ),
         ),

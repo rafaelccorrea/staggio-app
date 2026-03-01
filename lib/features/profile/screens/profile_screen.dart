@@ -19,12 +19,12 @@ import '../../subscription/screens/features_screen.dart';
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
 
-  const ProfileScreen({super.key, required this.user});
+  ProfileScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -66,22 +66,22 @@ class ProfileScreen extends StatelessWidget {
                         duration: 1000.ms,
                       ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   Text(
                     user.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                     ),
                   ).animate().fadeIn(delay: 200.ms),
 
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
 
                   Text(
                     user.email,
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                   ).animate().fadeIn(delay: 300.ms),
 
                   const SizedBox(height: 8),
@@ -105,13 +105,13 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
 
             // Stats Row
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -124,32 +124,32 @@ class ProfileScreen extends StatelessWidget {
               child: Row(
                 children: [
                   _buildStatItem('${user.totalProperties}', 'Imóveis', AppColors.primary),
-                  Container(width: 1, height: 36, color: AppColors.surfaceVariant),
+                  Container(width: 1, height: 36, color: Theme.of(context).dividerColor),
                   _buildStatItem('${user.totalGenerations}', 'Gerações', AppColors.secondary),
-                  Container(width: 1, height: 36, color: AppColors.surfaceVariant),
+                  Container(width: 1, height: 36, color: Theme.of(context).dividerColor),
                   _buildStatItem('${user.aiCreditsRemaining}', 'Créditos', AppColors.success),
                 ],
               ),
             ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideY(begin: 0.1),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Account Section
             Text(
               'CONTA',
               style: TextStyle(
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
               ),
             ).animate().fadeIn(delay: 600.ms),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -173,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.crown_1,
@@ -182,11 +182,11 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const PlansScreen()),
+                        MaterialPageRoute(builder: (_) => PlansScreen()),
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.info_circle,
@@ -199,7 +199,7 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.flash_circle,
@@ -208,11 +208,11 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const BuyCreditsScreen()),
+                        MaterialPageRoute(builder: (_) => BuyCreditsScreen()),
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.clock,
@@ -233,24 +233,24 @@ class ProfileScreen extends StatelessWidget {
               ),
             ).animate().fadeIn(delay: 700.ms, duration: 500.ms).slideY(begin: 0.1),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // General Section
             Text(
               'GERAL',
               style: TextStyle(
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
               ),
             ).animate().fadeIn(delay: 800.ms),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -270,11 +270,11 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                        MaterialPageRoute(builder: (_) => SettingsScreen()),
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.message_question,
@@ -283,11 +283,11 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const HelpScreen()),
+                        MaterialPageRoute(builder: (_) => HelpScreen()),
                       );
                     },
                   ),
-                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  Divider(height: 1, indent: 72, color: Theme.of(context).dividerColor),
                   _buildMenuItem(
                     context,
                     icon: Iconsax.info_circle,
@@ -296,7 +296,7 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const AboutScreen()),
+                        MaterialPageRoute(builder: (_) => AboutScreen()),
                       );
                     },
                   ),
@@ -376,7 +376,7 @@ class ProfileScreen extends StatelessWidget {
             value,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: color),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
@@ -406,8 +406,8 @@ class ProfileScreen extends StatelessWidget {
         child: Icon(icon, color: AppColors.primary, size: 22),
       ),
       title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-      trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.textTertiary),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)),
+      trailing: Icon(Iconsax.arrow_right_3, size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
     );
   }
 }

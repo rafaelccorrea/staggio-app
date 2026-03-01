@@ -90,12 +90,12 @@ class FeaturesScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Plano $planName',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             _getPlanDescription(),
             style: TextStyle(
@@ -146,7 +146,7 @@ class FeaturesScreen extends StatelessWidget {
               color: feature.available ? AppColors.success : AppColors.textTertiary,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class FeaturesScreen extends StatelessWidget {
                 ),
                 if (feature.description != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: EdgeInsets.only(top: 4),
                     child: Text(
                       feature.description!,
                       style: TextStyle(
@@ -184,7 +184,7 @@ class FeaturesScreen extends StatelessWidget {
     final availableCredits = totalCredits - usedCredits;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
@@ -216,7 +216,7 @@ class FeaturesScreen extends StatelessWidget {
 
   Widget _buildCreditRow(String label, String value, {bool highlight = false}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

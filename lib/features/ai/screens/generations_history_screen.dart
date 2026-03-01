@@ -48,7 +48,7 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _generations.isEmpty
               ? Center(
                   child: Column(
@@ -58,21 +58,21 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceVariant,
+                          color: Theme.of(context).dividerColor,
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Iconsax.magic_star,
                           size: 40,
-                          color: AppColors.textTertiary,
+                          color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text(
                         'Nenhuma geração ainda',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'Use as ferramentas de IA para\nver seu histórico aqui',
                         textAlign: TextAlign.center,
@@ -88,11 +88,11 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
                     final gen = _generations[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: AppColors.surfaceVariant),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
@@ -142,9 +142,9 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
                           ),
                           Text(
                             '${gen.creditsUsed} crédito${gen.creditsUsed > 1 ? 's' : ''}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textTertiary,
+                              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                             ),
                           ),
                         ],

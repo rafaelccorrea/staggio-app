@@ -112,14 +112,14 @@ class _AppShellState extends State<AppShell> {
         onHistoryTap: () => _navigateToScreen(
           GenerationsHistoryScreen(apiClient: widget.apiClient),
         ),
-        onPlansTap: () => _navigateToScreen(const PlansScreen()),
+        onPlansTap: () => _navigateToScreen(PlansScreen()),
         onProfileTap: () {
           Navigator.of(context).pop();
           setState(() => _currentIndex = 3);
         },
-        onSettingsTap: () => _navigateToScreen(const SettingsScreen()),
-        onHelpTap: () => _navigateToScreen(const HelpScreen()),
-        onAboutTap: () => _navigateToScreen(const AboutScreen()),
+        onSettingsTap: () => _navigateToScreen(SettingsScreen()),
+        onHelpTap: () => _navigateToScreen(HelpScreen()),
+        onAboutTap: () => _navigateToScreen(AboutScreen()),
         onLogout: _handleLogout,
       ),
       body: IndexedStack(
@@ -235,7 +235,7 @@ class _AppShellState extends State<AppShell> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -246,11 +246,11 @@ class _AppShellState extends State<AppShell> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               'Ferramentas de IA',
               style: Theme.of(context).textTheme.headlineMedium,
@@ -363,9 +363,9 @@ class _AppShellState extends State<AppShell> {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
@@ -379,30 +379,30 @@ class _AppShellState extends State<AppShell> {
               ),
               child: Icon(icon, color: Colors.white, size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Iconsax.arrow_right_3, color: AppColors.textTertiary, size: 18),
+            Icon(Iconsax.arrow_right_3, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary, size: 18),
           ],
         ),
       ),

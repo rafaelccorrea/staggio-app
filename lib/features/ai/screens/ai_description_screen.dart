@@ -281,14 +281,14 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
 
               // Result
               if (_result != null) ...[
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.surfaceVariant),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +297,7 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
                         children: [
                           const Icon(Iconsax.tick_circle,
                               color: AppColors.success, size: 20),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             'Descrição Gerada',
                             style: Theme.of(context).textTheme.titleMedium,
@@ -328,7 +328,7 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       SelectableText(
                         _result!,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(

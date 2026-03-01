@@ -75,7 +75,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -83,7 +83,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -111,10 +111,10 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                     color: pack.color,
                     fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: AppColors.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
@@ -123,12 +123,12 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                   children: [
                     Icon(Iconsax.info_circle,
                         size: 18, color: AppColors.info),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Créditos bônus não expiram e não são afetados pela renovação da assinatura mensal.',
                         style: TextStyle(
-                            fontSize: 12, color: AppColors.textSecondary),
+                            fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                       ),
                     ),
                   ],
@@ -222,11 +222,11 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text('Cancelar',
-                    style: TextStyle(color: AppColors.textSecondary)),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary)),
               ),
             ],
           ),
@@ -238,15 +238,15 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -254,15 +254,15 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                     blurRadius: 8),
               ],
             ),
-            child: const Icon(Iconsax.arrow_left,
-                size: 20, color: AppColors.textPrimary),
+            child: Icon(Iconsax.arrow_left,
+                size: 20, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary),
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Comprar Créditos',
           style: TextStyle(
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w700),
         ),
@@ -273,7 +273,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(20),
-              physics: const BouncingScrollPhysics(),
+              physics: BouncingScrollPhysics(),
               children: [
                 // Header
                 Center(
@@ -291,20 +291,20 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                         child: const Icon(Iconsax.flash_circle,
                             size: 32, color: Colors.white),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
+                      SizedBox(height: 16),
+                      Text(
                         'Créditos Extras',
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary),
+                            color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'Compre créditos avulsos sem afetar\nsua assinatura mensal',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14, color: AppColors.textSecondary),
+                            fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -316,7 +316,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 12),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: AppColors.accent.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(14),
@@ -327,12 +327,12 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                     children: [
                       Icon(Iconsax.info_circle,
                           size: 20, color: AppColors.accent),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Créditos bônus nunca expiram e são usados apenas quando seus créditos mensais acabam.',
                           style: TextStyle(
-                              fontSize: 13, color: AppColors.textSecondary),
+                              fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                         ),
                       ),
                     ],
@@ -348,11 +348,11 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _selectedPack = index),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
+                      duration: Duration(milliseconds: 300),
                       margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(18),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected
@@ -383,7 +383,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                             child: Icon(pack.icon,
                                 color: pack.color, size: 24),
                           ),
-                          const SizedBox(width: 14),
+                          SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment:
@@ -422,12 +422,12 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                                     ],
                                   ],
                                 ),
-                                const SizedBox(height: 2),
+                                SizedBox(height: 2),
                                 Text(
                                   pack.pricePerCredit,
                                   style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textTertiary),
+                                      color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                                 ),
                               ],
                             ),
@@ -468,9 +468,9 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
 
           // Fixed purchase button
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: EdgeInsets.fromLTRB(20, 12, 20, 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),

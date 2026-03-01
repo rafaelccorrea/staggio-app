@@ -23,7 +23,7 @@ class QuickStatsCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.surfaceVariant,
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
@@ -38,21 +38,21 @@ class QuickStatsCard extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Text(
             value,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             title,
             style: TextStyle(
               fontSize: 12,
-              color: AppColors.textTertiary,
+              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
             ),
           ),
         ],

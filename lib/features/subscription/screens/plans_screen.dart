@@ -76,7 +76,7 @@ class _PlansScreenState extends State<PlansScreen> {
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -84,7 +84,7 @@ class _PlansScreenState extends State<PlansScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -103,16 +103,16 @@ class _PlansScreenState extends State<PlansScreen> {
                 'Assinar ${plan.name}',
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 '${plan.price}${plan.period}',
                 style: TextStyle(fontSize: 18, color: plan.color, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 'Você será redirecionado para o checkout seguro do Stripe para finalizar sua assinatura.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -195,10 +195,10 @@ class _PlansScreenState extends State<PlansScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+                child: Text('Cancelar', style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary)),
               ),
             ],
           ),
@@ -210,27 +210,27 @@ class _PlansScreenState extends State<PlansScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
               ],
             ),
-            child: const Icon(Iconsax.arrow_left, size: 20, color: AppColors.textPrimary),
+            child: Icon(Iconsax.arrow_left, size: 20, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary),
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Planos',
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
       ),
@@ -239,24 +239,24 @@ class _PlansScreenState extends State<PlansScreen> {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(20),
-              physics: const BouncingScrollPhysics(),
+              physics: BouncingScrollPhysics(),
               children: [
                 Center(
                   child: Column(
                     children: [
-                      const Text(
+                      Text(
                         'Escolha o plano ideal',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'Potencialize suas vendas com IA',
-                        style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                       ),
                     ],
                   ),
                 ).animate().fadeIn(duration: 500.ms),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 ...List.generate(_plans.length, (index) {
                   final plan = _plans[index];
                   final isSelected = _selectedPlan == index;
@@ -265,9 +265,9 @@ class _PlansScreenState extends State<PlansScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       margin: const EdgeInsets.only(bottom: 14),
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: isSelected ? plan.color : Colors.transparent,
@@ -301,7 +301,7 @@ class _PlansScreenState extends State<PlansScreen> {
                                   size: 22,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,7 +312,7 @@ class _PlansScreenState extends State<PlansScreen> {
                                     ),
                                     Text(
                                       plan.credits,
-                                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                      style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                                     ),
                                   ],
                                 ),
@@ -333,7 +333,7 @@ class _PlansScreenState extends State<PlansScreen> {
                                 Icon(Iconsax.tick_circle, color: plan.color, size: 24),
                             ],
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -341,11 +341,11 @@ class _PlansScreenState extends State<PlansScreen> {
                                 plan.price,
                                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: plan.color),
                               ),
-                              Text(plan.period, style: TextStyle(fontSize: 14, color: AppColors.textTertiary)),
+                              Text(plan.period, style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)),
                             ],
                           ),
-                          const SizedBox(height: 14),
-                          Divider(color: AppColors.surfaceVariant),
+                          SizedBox(height: 14),
+                          Divider(color: Theme.of(context).dividerColor),
                           const SizedBox(height: 10),
                           ...plan.features.map((feature) => Padding(
                                 padding: const EdgeInsets.only(bottom: 6),
@@ -368,9 +368,9 @@ class _PlansScreenState extends State<PlansScreen> {
 
           // Fixed Subscribe Button
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: EdgeInsets.fromLTRB(20, 12, 20, 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -4)),
               ],

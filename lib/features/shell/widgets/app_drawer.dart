@@ -293,7 +293,7 @@ class AppDrawer extends StatelessWidget {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 8, 28, 4),
+      padding: EdgeInsets.fromLTRB(28, 8, 28, 4),
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
@@ -328,7 +328,7 @@ class AppDrawer extends StatelessWidget {
         ),
         title: Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,

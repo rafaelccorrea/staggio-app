@@ -191,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     if (_isLoadingProfile) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF8F7FF),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           title: const Text('Editar Perfil'),
           leading: IconButton(
@@ -204,7 +204,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Editar Perfil'),
         leading: IconButton(
@@ -412,7 +412,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
+          borderSide: BorderSide(color: Theme.of(context).dividerColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -420,10 +420,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
+          borderSide: BorderSide(color: Theme.of(context).dividerColor),
         ),
         suffixIcon: !enabled
-            ? Icon(Iconsax.lock, size: 18, color: AppColors.textTertiary)
+            ? Icon(Iconsax.lock, size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)
             : null,
       ),
       validator: validator,

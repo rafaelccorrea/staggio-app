@@ -6,7 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/app_theme.dart';
 
 class AboutScreen extends StatefulWidget {
-  const AboutScreen({super.key});
+  AboutScreen({super.key});
 
   @override
   State<AboutScreen> createState() => _AboutScreenState();
@@ -33,7 +33,7 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Sobre'),
         leading: IconButton(
@@ -73,24 +73,24 @@ class _AboutScreenState extends State<AboutScreen> {
           const SizedBox(height: 20),
 
           Center(
-            child: const Text(
+            child: Text(
               'Staggio',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
               ),
             ),
           ).animate().fadeIn(delay: 200.ms),
 
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
 
           Center(
             child: Text(
               'Versão $_appVersion',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
               ),
             ),
           ).animate().fadeIn(delay: 300.ms),
@@ -119,30 +119,30 @@ class _AboutScreenState extends State<AboutScreen> {
 
           // Description
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Sobre o Staggio',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   'O Staggio é a plataforma de inteligência artificial mais avançada para corretores de imóveis. '
                   'Com nossas ferramentas de IA, você pode transformar imóveis vazios em ambientes decorados, '
@@ -150,7 +150,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   'Nossa missão é empoderar corretores com tecnologia de ponta para vender mais e melhor.',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                     height: 1.6,
                   ),
                 ),
@@ -162,9 +162,9 @@ class _AboutScreenState extends State<AboutScreen> {
 
           // Stats
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -185,12 +185,12 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
           ).animate().fadeIn(delay: 600.ms, duration: 500.ms).slideY(begin: 0.1),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Legal
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -212,9 +212,9 @@ class _AboutScreenState extends State<AboutScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.shield_tick, color: AppColors.primary),
                   title: const Text('Política de Privacidade', style: TextStyle(fontSize: 15)),
-                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.textTertiary),
+                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                 ),
-                Divider(height: 1, indent: 64, color: AppColors.surfaceVariant),
+                Divider(height: 1, indent: 64, color: Theme.of(context).dividerColor),
                 ListTile(
                   onTap: () async {
                     final uri = Uri.parse('https://staggio.app/termos');
@@ -225,9 +225,9 @@ class _AboutScreenState extends State<AboutScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.document, color: AppColors.primary),
                   title: const Text('Termos de Uso', style: TextStyle(fontSize: 15)),
-                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.textTertiary),
+                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                 ),
-                Divider(height: 1, indent: 64, color: AppColors.surfaceVariant),
+                Divider(height: 1, indent: 64, color: Theme.of(context).dividerColor),
                 ListTile(
                   onTap: () {
                     showLicensePage(
@@ -239,25 +239,25 @@ class _AboutScreenState extends State<AboutScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.code, color: AppColors.primary),
                   title: const Text('Licenças Open Source', style: TextStyle(fontSize: 15)),
-                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.textTertiary),
+                  trailing: Icon(Iconsax.arrow_right_3, size: 18, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary),
                 ),
               ],
             ),
           ).animate().fadeIn(delay: 700.ms, duration: 500.ms).slideY(begin: 0.1),
 
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
 
           Center(
             child: Text(
               '© 2026 Staggio. Todos os direitos reservados.',
               style: TextStyle(
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                 fontSize: 12,
               ),
             ),
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
         ],
       ),
     );
@@ -275,12 +275,12 @@ class _AboutScreenState extends State<AboutScreen> {
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: AppColors.textTertiary,
+              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
             ),
           ),
         ],
@@ -292,7 +292,7 @@ class _AboutScreenState extends State<AboutScreen> {
     return Container(
       width: 1,
       height: 36,
-      color: AppColors.surfaceVariant,
+      color: Theme.of(context).dividerColor,
     );
   }
 }

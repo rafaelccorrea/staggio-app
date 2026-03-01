@@ -192,7 +192,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: AppColors.textTertiary,
+                color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
                 shape: BoxShape.circle,
               ),
             )

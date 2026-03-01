@@ -5,12 +5,12 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 
 class HelpScreen extends StatelessWidget {
-  const HelpScreen({super.key});
+  HelpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Suporte'),
         leading: IconButton(
@@ -61,7 +61,7 @@ class HelpScreen extends StatelessWidget {
             ),
           ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // FAQ Section
           Text(
@@ -100,7 +100,7 @@ class HelpScreen extends StatelessWidget {
             'Sim! Todas as imagens geradas pelo Staggio são de uso livre para fins comerciais, incluindo anúncios e materiais de marketing.',
           ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Contact Section
           Text(
@@ -113,11 +113,11 @@ class HelpScreen extends StatelessWidget {
             ),
           ).animate().fadeIn(delay: 700.ms),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -176,9 +176,9 @@ class HelpScreen extends StatelessWidget {
 
   Widget _buildFAQItem(BuildContext context, String question, String answer) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -195,7 +195,7 @@ class HelpScreen extends StatelessWidget {
         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           question,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,

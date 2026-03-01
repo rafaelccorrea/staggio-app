@@ -16,14 +16,14 @@ import '../../ai/screens/generations_history_screen.dart';
 class HomeScreen extends StatelessWidget {
   final UserModel user;
 
-  const HomeScreen({super.key, required this.user});
+  HomeScreen({super.key, required this.user});
 
   ApiClient get _apiClient => ApiClient();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
             // Header
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
                   children: [
                     // Menu button - opens drawer
@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                           duration: 800.ms,
                         ),
 
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
 
                     // Greeting
                     Expanded(
@@ -89,10 +89,10 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Olá, ${user.name.split(' ').first}! 👋',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                             ),
                           ),
                           Text(
@@ -112,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Nenhuma notificação no momento'),
+                            content: Text('Nenhuma notificação no momento'),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -124,7 +124,7 @@ class HomeScreen extends StatelessWidget {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
@@ -136,8 +136,8 @@ class HomeScreen extends StatelessWidget {
                         ),
                         child: Stack(
                           children: [
-                            const Center(
-                              child: Icon(Iconsax.notification, size: 22, color: AppColors.textSecondary),
+                            Center(
+                              child: Icon(Iconsax.notification, size: 22, color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                             ),
                             Positioned(
                               top: 10,
@@ -243,16 +243,16 @@ class HomeScreen extends StatelessWidget {
             // AI Tools Section Title
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Ferramentas de IA',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                       ),
                     ),
                     GestureDetector(
@@ -355,12 +355,12 @@ class HomeScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-                child: const Text(
+                child: Text(
                   'Resumo',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
                   ),
                 ).animate().fadeIn(delay: 900.ms),
               ),
