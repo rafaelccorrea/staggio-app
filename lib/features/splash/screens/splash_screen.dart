@@ -31,24 +31,28 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _preloadVideosAndComplete() async {
     try {
       final videoUrls = [
-        'https://cdn.example.com/staggio_video_1.mp4',
-        'https://cdn.example.com/staggio_video_2.mp4',
+        'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_1_153fddcf.mp4',
+        'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_2_8aa6a5e0.mp4',
       ];
+      debugPrint('[SPLASH] Starting to preload ${videoUrls.length} videos');
 
       // Preload videos
+      debugPrint('[SPLASH] Calling preloadVideos...');
       await VideoCacheService.preloadVideos(videoUrls);
       debugPrint('[SPLASH] Videos preloaded successfully');
 
-      // Wait minimum 2 seconds for splash animation
-      await Future.delayed(const Duration(milliseconds: 2000));
+      // Wait minimum 3 seconds for splash animation and video loading
+      debugPrint('[SPLASH] Waiting 3 seconds before completing...');
+      await Future.delayed(const Duration(milliseconds: 3000));
 
       if (mounted) {
         widget.onComplete();
       }
     } catch (e) {
       debugPrint('[SPLASH] Error preloading videos: $e');
-      // Continue anyway after 3 seconds
-      await Future.delayed(const Duration(milliseconds: 3000));
+      debugPrint('[SPLASH] Stack trace: ${StackTrace.current}');
+      // Continue anyway after 5 seconds
+      await Future.delayed(const Duration(milliseconds: 5000));
       if (mounted) {
         widget.onComplete();
       }
