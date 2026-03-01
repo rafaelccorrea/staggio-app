@@ -84,16 +84,20 @@ class ShowcaseSection extends StatelessWidget {
         VideoCarousel(
           videos: [
             VideoItem(
-              url: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
-              title: 'Tour Virtual - Apartamento Luxo',
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_house_cinematic_d46fb731.mp4',
+              title: 'Tour Cinematográfico - Casa Moderna',
             ),
             VideoItem(
-              url: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
-              title: 'Apresentação - Casa Moderna',
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_land_transformation_00e2632a.mp4',
+              title: 'Transformação - Terreno para Casa',
             ),
             VideoItem(
-              url: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerBlazes.mp4',
-              title: 'Redes Sociais - Imóvel Premium',
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondcinematicrealestatevideoofamodernhouseforsaleShotbreakdown-5secondssmoothdroneshotappro_dce0c79f.mp4',
+              title: 'Drone Tour - Imóvel Premium',
+            ),
+            VideoItem(
+              url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondarchitecturaltransformationvideoSinglefixedcameraanglethroughouttheentirevideoConsistentdaylightlightingandsamesundirectionStage1(10seconds)emptygrassylot_da23cffb.mp4',
+              title: 'Visualização Arquitetônica 3D',
             ),
           ],
         ),

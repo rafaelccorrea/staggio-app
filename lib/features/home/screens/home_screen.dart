@@ -37,9 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _preloadShowcaseVideos() async {
     final videoUrls = [
-      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
-      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
-      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerBlazes.mp4',
+      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_house_cinematic_d46fb731.mp4',
+      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_land_transformation_00e2632a.mp4',
+      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondcinematicrealestatevideoofamodernhouseforsaleShotbreakdown-5secondssmoothdroneshotappro_dce0c79f.mp4',
+      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondarchitecturaltransformationvideoSinglefixedcameraanglethroughouttheentirevideoConsistentdaylightlightingandsamesundirectionStage1(10seconds)emptygrassylot_da23cffb.mp4',
     ];
     // Pre-load in background without blocking UI
     await VideoCacheService.preloadVideos(videoUrls);
