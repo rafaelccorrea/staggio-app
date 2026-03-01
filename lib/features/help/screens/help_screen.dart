@@ -67,7 +67,7 @@ class HelpScreen extends StatelessWidget {
           Text(
             'PERGUNTAS FREQUENTES',
             style: TextStyle(
-              color: AppColors.textTertiary,
+              color: AppColors.adaptiveTextTertiary(context),
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -106,7 +106,7 @@ class HelpScreen extends StatelessWidget {
           Text(
             'CONTATO',
             style: TextStyle(
-              color: AppColors.textTertiary,
+              color: AppColors.adaptiveTextTertiary(context),
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -129,7 +129,7 @@ class HelpScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _buildContactTile(
+                _buildContactTile(context,
                   icon: Iconsax.sms,
                   title: 'Email',
                   subtitle: 'suporte@staggio.app',
@@ -141,7 +141,7 @@ class HelpScreen extends StatelessWidget {
                   },
                 ),
                 Divider(height: 1, indent: 72, color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5)),
-                _buildContactTile(
+                _buildContactTile(context,
                   icon: Iconsax.message_text,
                   title: 'WhatsApp',
                   subtitle: 'Fale conosco',
@@ -153,7 +153,7 @@ class HelpScreen extends StatelessWidget {
                   },
                 ),
                 Divider(height: 1, indent: 72, color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5)),
-                _buildContactTile(
+                _buildContactTile(context,
                   icon: Iconsax.instagram,
                   title: 'Instagram',
                   subtitle: '@staggio.app',
@@ -198,7 +198,7 @@ class HelpScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: AppColors.adaptiveTextPrimary(context),
           ),
         ),
         children: [
@@ -206,7 +206,7 @@ class HelpScreen extends StatelessWidget {
             answer,
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.textSecondary,
+              color: AppColors.adaptiveTextSecondary(context),
               height: 1.5,
             ),
           ),
@@ -215,7 +215,7 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactTile({
+  Widget _buildContactTile(BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
@@ -234,8 +234,8 @@ class HelpScreen extends StatelessWidget {
         child: Icon(icon, color: AppColors.primary, size: 22),
       ),
       title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-      trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.textTertiary),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: AppColors.adaptiveTextSecondary(context))),
+      trailing: Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.adaptiveTextTertiary(context)),
     );
   }
 }

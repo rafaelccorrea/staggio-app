@@ -155,7 +155,7 @@ class CreditsCard extends StatelessWidget {
               minHeight: 8,
               backgroundColor: isDark
                   ? AppColors.darkSurfaceVariant
-                  : AppColors.surfaceVariant,
+                  : AppColors.adaptiveSurfaceVariant(context),
               valueColor: AlwaysStoppedAnimation<Color>(
                 percentage > 0.8 ? AppColors.error : AppColors.primary,
               ),

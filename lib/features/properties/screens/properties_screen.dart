@@ -272,11 +272,11 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                             },
                             selectedColor:
                                 AppColors.primary.withValues(alpha: 0.15),
-                            backgroundColor: AppColors.surface,
+                            backgroundColor: AppColors.adaptiveSurface(context),
                             labelStyle: TextStyle(
                               color: isSelected
                                   ? AppColors.primary
-                                  : AppColors.textSecondary,
+                                  : AppColors.adaptiveTextSecondary(context),
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
@@ -287,7 +287,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                               side: BorderSide(
                                 color: isSelected
                                     ? AppColors.primary
-                                    : AppColors.surfaceVariant,
+                                    : AppColors.adaptiveSurfaceVariant(context),
                               ),
                             ),
                           ),
@@ -491,7 +491,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                         horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.surface.withValues(alpha: 0.9)
+                          ? AppColors.adaptiveSurface(context).withValues(alpha: 0.9)
                           : Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -645,13 +645,13 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
       padding: EdgeInsets.only(left: 12),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: AppColors.textTertiary),
+          Icon(icon, size: 14, color: AppColors.adaptiveTextTertiary(context)),
           SizedBox(width: 4),
           Text(
             text,
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.textSecondary,
+              color: AppColors.adaptiveTextSecondary(context),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -776,16 +776,16 @@ class _PropertyDetailSheet extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           if (property.bedrooms != null)
-                            _buildDetailItem(
+                            _buildDetailItem(context,
                                 Iconsax.lamp, '${property.bedrooms}', 'Quartos'),
                           if (property.bathrooms != null)
-                            _buildDetailItem(Iconsax.drop,
+                            _buildDetailItem(context, Iconsax.drop,
                                 '${property.bathrooms}', 'Banheiros'),
                           if (property.area != null)
-                            _buildDetailItem(Iconsax.ruler,
+                            _buildDetailItem(context, Iconsax.ruler,
                                 '${property.area?.toInt()}m²', 'Área'),
                           if (property.parkingSpots != null)
-                            _buildDetailItem(Iconsax.car,
+                            _buildDetailItem(context, Iconsax.car,
                                 '${property.parkingSpots}', 'Vagas'),
                         ],
                       ),
@@ -974,7 +974,7 @@ class _PropertyDetailSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(IconData icon, String value, String label) {
+  Widget _buildDetailItem(BuildContext context, IconData icon, String value, String label) {
     return Column(
       children: [
         Container(
@@ -992,14 +992,14 @@ class _PropertyDetailSheet extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: AppColors.adaptiveTextPrimary(context),
           ),
         ),
         Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.textTertiary,
+            color: AppColors.adaptiveTextTertiary(context),
           ),
         ),
       ],

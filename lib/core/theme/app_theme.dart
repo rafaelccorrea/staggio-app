@@ -68,6 +68,40 @@ class AppColors {
     end: Alignment.bottomRight,
     colors: [Color(0xFF00D2D3), Color(0xFF0095FF)],
   );
+
+  // ── Adaptive helpers (auto light/dark) ──
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color adaptiveBackground(BuildContext context) =>
+      _isDark(context) ? darkBackground : background;
+
+  static Color adaptiveSurface(BuildContext context) =>
+      _isDark(context) ? darkSurface : surface;
+
+  static Color adaptiveSurfaceVariant(BuildContext context) =>
+      _isDark(context) ? darkSurfaceVariant : surfaceVariant;
+
+  static Color adaptiveCardBg(BuildContext context) =>
+      _isDark(context) ? darkCardBg : cardBg;
+
+  static Color adaptiveTextPrimary(BuildContext context) =>
+      _isDark(context) ? darkTextPrimary : textPrimary;
+
+  static Color adaptiveTextSecondary(BuildContext context) =>
+      _isDark(context) ? darkTextSecondary : textSecondary;
+
+  static Color adaptiveTextTertiary(BuildContext context) =>
+      _isDark(context) ? darkTextTertiary : textTertiary;
+
+  static Color adaptiveBorder(BuildContext context) =>
+      _isDark(context) ? darkSurfaceVariant : const Color(0xFFE8E9F3);
+
+  static Color adaptiveShadow(BuildContext context) =>
+      _isDark(context) ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.05);
+
+  static Color adaptiveIcon(BuildContext context) =>
+      _isDark(context) ? darkTextSecondary : textSecondary;
 }
 
 class AppTheme {

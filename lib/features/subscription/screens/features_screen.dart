@@ -22,24 +22,24 @@ class FeaturesScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _buildPlanHeader(),
+          _buildPlanHeader(context),
           const SizedBox(height: 32),
-          _buildFeatureSection(
+          _buildFeatureSection(context,
             'Ferramentas IA',
             _getAIFeatures(),
           ),
           const SizedBox(height: 24),
-          _buildFeatureSection(
+          _buildFeatureSection(context,
             'Limites e Quotas',
             _getLimitsFeatures(),
           ),
           const SizedBox(height: 24),
-          _buildFeatureSection(
+          _buildFeatureSection(context,
             'Suporte',
             _getSupportFeatures(),
           ),
           const SizedBox(height: 24),
-          _buildFeatureSection(
+          _buildFeatureSection(context,
             'Integrações',
             _getIntegrationFeatures(),
           ),
@@ -51,7 +51,7 @@ class FeaturesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPlanHeader() {
+  Widget _buildPlanHeader(BuildContext context) {
     final planName = _getPlanName();
     final planColor = _getPlanColor();
 
@@ -99,7 +99,7 @@ class FeaturesScreen extends StatelessWidget {
           Text(
             _getPlanDescription(),
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.adaptiveTextSecondary(context),
               fontSize: 14,
             ),
           ),
@@ -108,7 +108,7 @@ class FeaturesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureSection(String title, List<_Feature> features) {
+  Widget _buildFeatureSection(BuildContext context, String title, List<_Feature> features) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,12 +120,12 @@ class FeaturesScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        ...features.map((feature) => _buildFeatureItem(feature)),
+        ...features.map((feature) => _buildFeatureItem(context, feature)),
       ],
     );
   }
 
-  Widget _buildFeatureItem(_Feature feature) {
+  Widget _buildFeatureItem(BuildContext context, _Feature feature) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -137,13 +137,13 @@ class FeaturesScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: feature.available
                   ? AppColors.success.withValues(alpha: 0.2)
-                  : AppColors.textTertiary.withValues(alpha: 0.1),
+                  : AppColors.adaptiveTextTertiary(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
               feature.available ? Iconsax.tick_circle : Iconsax.close_circle,
               size: 14,
-              color: feature.available ? AppColors.success : AppColors.textTertiary,
+              color: feature.available ? AppColors.success : AppColors.adaptiveTextTertiary(context),
             ),
           ),
           SizedBox(width: 12),
@@ -156,7 +156,7 @@ class FeaturesScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: feature.available ? AppColors.textPrimary : AppColors.textTertiary,
+                    color: feature.available ? AppColors.adaptiveTextPrimary(context) : AppColors.adaptiveTextTertiary(context),
                   ),
                 ),
                 if (feature.description != null)
@@ -166,7 +166,7 @@ class FeaturesScreen extends StatelessWidget {
                       feature.description!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textTertiary,
+                        color: AppColors.adaptiveTextTertiary(context),
                       ),
                     ),
                   ),
@@ -200,11 +200,11 @@ class FeaturesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildCreditRow('Créditos mensais', user.aiCreditsLimit.toString()),
-          _buildCreditRow('Créditos bônus', user.bonusCredits.toString()),
-          _buildCreditRow('Créditos usados', usedCredits.toString()),
+          _buildCreditRow(context, 'Créditos mensais', user.aiCreditsLimit.toString()),
+          _buildCreditRow(context, 'Créditos bônus', user.bonusCredits.toString()),
+          _buildCreditRow(context, 'Créditos usados', usedCredits.toString()),
           const Divider(height: 16),
-          _buildCreditRow(
+          _buildCreditRow(context,
             'Créditos disponíveis',
             availableCredits.toString(),
             highlight: true,
@@ -214,7 +214,7 @@ class FeaturesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCreditRow(String label, String value, {bool highlight = false}) {
+  Widget _buildCreditRow(BuildContext context, String label, String value, {bool highlight = false}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8),
       child: Row(
@@ -224,7 +224,7 @@ class FeaturesScreen extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: AppColors.adaptiveTextSecondary(context),
             ),
           ),
           Text(
@@ -232,7 +232,7 @@ class FeaturesScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: highlight ? FontWeight.w700 : FontWeight.w500,
-              color: highlight ? AppColors.primary : AppColors.textPrimary,
+              color: highlight ? AppColors.primary : AppColors.adaptiveTextPrimary(context),
             ),
           ),
         ],

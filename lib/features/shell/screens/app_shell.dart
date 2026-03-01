@@ -205,7 +205,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                color: isSelected ? AppColors.primary : AppColors.adaptiveTextTertiary(context),
                 size: 24,
               ),
             ),
@@ -215,7 +215,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                color: isSelected ? AppColors.primary : AppColors.adaptiveTextTertiary(context),
               ),
             ),
           ],

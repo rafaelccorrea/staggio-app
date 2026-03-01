@@ -399,7 +399,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       enabled: enabled,
       style: TextStyle(
         fontSize: 15,
-        color: enabled ? AppColors.textPrimary : AppColors.textTertiary,
+        color: enabled ? AppColors.adaptiveTextPrimary(context) : AppColors.adaptiveTextTertiary(context),
       ),
       decoration: InputDecoration(
         labelText: label,

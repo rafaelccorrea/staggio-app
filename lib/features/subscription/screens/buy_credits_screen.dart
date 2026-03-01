@@ -446,7 +446,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                                   fontWeight: FontWeight.w800,
                                   color: isSelected
                                       ? pack.color
-                                      : AppColors.textPrimary,
+                                      : AppColors.adaptiveTextPrimary(context),
                                 ),
                               ),
                               if (isSelected)

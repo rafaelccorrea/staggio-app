@@ -514,7 +514,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     onSelected: (_) => setState(() => _selectedType = type['key']!),
                     selectedColor: AppColors.primary.withValues(alpha: 0.15),
                     labelStyle: TextStyle(
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      color: isSelected ? AppColors.primary : AppColors.adaptiveTextSecondary(context),
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   );

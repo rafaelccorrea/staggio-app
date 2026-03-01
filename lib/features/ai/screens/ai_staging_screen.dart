@@ -241,10 +241,10 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary.withValues(alpha: 0.1)
-                          : AppColors.surface,
+                          : AppColors.adaptiveSurface(context),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : AppColors.surfaceVariant,
+                        color: isSelected ? AppColors.primary : AppColors.adaptiveSurfaceVariant(context),
                         width: isSelected ? 2 : 1,
                       ),
                     ),

@@ -123,11 +123,11 @@ class ProfileScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  _buildStatItem('${user.totalProperties}', 'Imóveis', AppColors.primary),
+                  _buildStatItem(context, '${user.totalProperties}', 'Imóveis', AppColors.primary),
                   Container(width: 1, height: 36, color: Theme.of(context).dividerColor),
-                  _buildStatItem('${user.totalGenerations}', 'Gerações', AppColors.secondary),
+                  _buildStatItem(context, '${user.totalGenerations}', 'Gerações', AppColors.secondary),
                   Container(width: 1, height: 36, color: Theme.of(context).dividerColor),
-                  _buildStatItem('${user.aiCreditsRemaining}', 'Créditos', AppColors.success),
+                  _buildStatItem(context, '${user.aiCreditsRemaining}', 'Créditos', AppColors.success),
                 ],
               ),
             ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideY(begin: 0.1),
@@ -369,7 +369,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String value, String label, Color color) {
+  Widget _buildStatItem(BuildContext context, String value, String label, Color color) {
     return Expanded(
       child: Column(
         children: [
@@ -380,7 +380,7 @@ class ProfileScreen extends StatelessWidget {
           SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
+            style: TextStyle(fontSize: 12, color: AppColors.adaptiveTextTertiary(context)),
           ),
         ],
       ),

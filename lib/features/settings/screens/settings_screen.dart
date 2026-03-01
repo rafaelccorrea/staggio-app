@@ -310,12 +310,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: isDestructive ? AppColors.error : AppColors.textPrimary,
+          color: isDestructive ? AppColors.error : AppColors.adaptiveTextPrimary(context),
         ),
       ),
       subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary)),
       trailing: Icon(Iconsax.arrow_right_3,
-          size: 18, color: isDestructive ? AppColors.error : AppColors.textTertiary),
+          size: 18, color: isDestructive ? AppColors.error : AppColors.adaptiveTextTertiary(context)),
     );
   }
 
