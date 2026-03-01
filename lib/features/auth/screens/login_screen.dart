@@ -118,6 +118,13 @@ class _LoginScreenState extends State<LoginScreen>
                 email: _emailController.text.trim(),
                 password: _passwordController.text,
               );
+
+              // Show biometric enable prompt (only once, only if device supports it)
+              BiometricService.showEnablePrompt(
+                context,
+                email: _emailController.text.trim(),
+                password: _passwordController.text,
+              );
             }
             // Navigation is handled automatically by BlocListener in main.dart
             // using the global navigatorKey to pop all routes

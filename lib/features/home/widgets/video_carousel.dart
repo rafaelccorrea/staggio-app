@@ -28,6 +28,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
   int _currentIndex = 0;
   bool _showControls = false;
   late Future<void> _initializeVideosFuture;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -44,28 +45,56 @@ class _VideoCarouselState extends State<VideoCarousel> {
   Future<void> _initializeVideos() async {
     // Only initialize controllers that aren't already initialized
     for (var controller in _controllers) {
-      if (!controller.value.isInitialized) {
-        await controller.initialize();
-        controller.setLooping(true);
+      if (_disposed) return;
+      try {
+        if (!controller.value.isInitialized) {
+          await controller.initialize();
+          controller.setLooping(true);
+        }
+      } catch (e) {
+        debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar vídeo: $e');
       }
     }
-    if (mounted) {
+    if (mounted && !_disposed) {
       setState(() {
-        if (!_controllers[0].value.isPlaying) {
-          _controllers[0].play();
+        try {
+          if (_controllers.isNotEmpty &&
+              _controllers[0].value.isInitialized &&
+              !_controllers[0].value.isPlaying) {
+            _controllers[0].play();
+          }
+        } catch (e) {
+          debugPrint('[VIDEO_CAROUSEL] Erro ao iniciar reprodução: $e');
         }
       });
     }
   }
 
-
+  /// Safely check if a controller is usable (not disposed)
+  bool _isControllerUsable(VideoPlayerController controller) {
+    try {
+      // Accessing .value will throw if disposed
+      controller.value;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   void _togglePlayPause() {
+    if (_disposed) return;
+    final controller = _controllers[_currentIndex];
+    if (!_isControllerUsable(controller)) return;
+
     setState(() {
-      if (_controllers[_currentIndex].value.isPlaying) {
-        _controllers[_currentIndex].pause();
-      } else {
-        _controllers[_currentIndex].play();
+      try {
+        if (controller.value.isPlaying) {
+          controller.pause();
+        } else {
+          controller.play();
+        }
+      } catch (e) {
+        debugPrint('[VIDEO_CAROUSEL] Erro ao alternar play/pause: $e');
       }
     });
   }
@@ -85,7 +114,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
   void _showControlsTemporarily() {
     setState(() => _showControls = true);
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+      if (mounted && !_disposed) {
         setState(() => _showControls = false);
       }
     });
@@ -93,9 +122,19 @@ class _VideoCarouselState extends State<VideoCarousel> {
 
   @override
   void dispose() {
+    _disposed = true;
     _pageController.dispose();
+    // IMPORTANT: Do NOT dispose the video controllers here!
+    // They are managed by VideoCacheService and shared across widget rebuilds.
+    // Disposing them here causes "used after being disposed" errors when
+    // the widget is recreated (e.g., tab switching, navigation).
+    // Instead, just pause all videos when leaving.
     for (var controller in _controllers) {
-      controller.dispose();
+      try {
+        if (_isControllerUsable(controller) && controller.value.isPlaying) {
+          controller.pause();
+        }
+      } catch (_) {}
     }
     super.dispose();
   }
@@ -114,16 +153,26 @@ class _VideoCarouselState extends State<VideoCarousel> {
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: (index) {
+                    if (_disposed) return;
                     setState(() => _currentIndex = index);
-                    _controllers[_currentIndex].play();
+                    // Play current, pause others
                     for (int i = 0; i < _controllers.length; i++) {
-                      if (i != _currentIndex) {
-                        _controllers[i].pause();
-                      }
+                      final ctrl = _controllers[i];
+                      if (!_isControllerUsable(ctrl)) continue;
+                      try {
+                        if (i == index) {
+                          ctrl.play();
+                        } else {
+                          ctrl.pause();
+                        }
+                      } catch (_) {}
                     }
                   },
                   itemCount: widget.videos.length,
                   itemBuilder: (context, index) {
+                    final controller = _controllers[index];
+                    final isUsable = _isControllerUsable(controller);
+
                     return GestureDetector(
                       onTap: () {
                         _showControlsTemporarily();
@@ -138,21 +187,31 @@ class _VideoCarouselState extends State<VideoCarousel> {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            // Video Player
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: AspectRatio(
-                                aspectRatio:
-                                    _controllers[index].value.aspectRatio,
-                                child: VideoPlayer(_controllers[index]),
+                            // Video Player or placeholder
+                            if (isUsable && controller.value.isInitialized)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: AspectRatio(
+                                  aspectRatio: controller.value.aspectRatio,
+                                  child: VideoPlayer(controller),
+                                ),
+                              )
+                            else
+                              Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).primaryColor,
+                                  ),
+                                ),
                               ),
-                            ),
 
                             // Play/Pause Overlay (appears on tap)
-                            if (_showControls)
+                            if (_showControls && isUsable)
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3 * 0.3) : Colors.black.withValues(alpha: 0.3),
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.black.withValues(alpha: 0.09)
+                                      : Colors.black.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Center(
@@ -164,7 +223,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
-                                      _controllers[index].value.isPlaying
+                                      controller.value.isPlaying
                                           ? Iconsax.pause
                                           : Iconsax.play,
                                       color: Colors.black,
@@ -306,6 +365,16 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
     _pageController = PageController(initialPage: widget.initialIndex);
   }
 
+  /// Safely check if a controller is usable (not disposed)
+  bool _isControllerUsable(VideoPlayerController controller) {
+    try {
+      controller.value;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void _showControlsTemporarily() {
     setState(() => _showControls = true);
     Future.delayed(const Duration(seconds: 3), () {
@@ -316,18 +385,24 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
   }
 
   void _togglePlayPause() {
+    final controller = widget.controllers[_currentIndex];
+    if (!_isControllerUsable(controller)) return;
+
     setState(() {
-      if (widget.controllers[_currentIndex].value.isPlaying) {
-        widget.controllers[_currentIndex].pause();
-      } else {
-        widget.controllers[_currentIndex].play();
-      }
+      try {
+        if (controller.value.isPlaying) {
+          controller.pause();
+        } else {
+          controller.play();
+        }
+      } catch (_) {}
     });
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    // Do NOT dispose video controllers - they're shared from cache
     super.dispose();
   }
 
@@ -348,27 +423,40 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
               controller: _pageController,
               onPageChanged: (index) {
                 setState(() => _currentIndex = index);
-                widget.controllers[_currentIndex].play();
                 for (int i = 0; i < widget.controllers.length; i++) {
-                  if (i != _currentIndex) {
-                    widget.controllers[i].pause();
-                  }
+                  final ctrl = widget.controllers[i];
+                  if (!_isControllerUsable(ctrl)) continue;
+                  try {
+                    if (i == index) {
+                      ctrl.play();
+                    } else {
+                      ctrl.pause();
+                    }
+                  } catch (_) {}
                 }
               },
               itemCount: widget.videos.length,
               itemBuilder: (context, index) {
+                final controller = widget.controllers[index];
+                final isUsable = _isControllerUsable(controller);
+
+                if (!isUsable || !controller.value.isInitialized) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
+                }
+
                 return Center(
                   child: AspectRatio(
-                    aspectRatio:
-                        widget.controllers[index].value.aspectRatio,
-                    child: VideoPlayer(widget.controllers[index]),
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
                   ),
                 );
               },
             ),
 
             // Play/Pause Overlay (appears on tap)
-            if (_showControls)
+            if (_showControls && _isControllerUsable(widget.controllers[_currentIndex]))
               Center(
                 child: Container(
                   width: 80,
@@ -390,7 +478,7 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
             // Close Button (appears on tap)
             if (_showControls)
               Positioned(
-                top: 16,
+                top: MediaQuery.of(context).padding.top + 8,
                 left: 16,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
@@ -426,7 +514,7 @@ class _FullScreenVideoCarouselState extends State<FullScreenVideoCarousel> {
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

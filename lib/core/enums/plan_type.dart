@@ -17,6 +17,26 @@ enum PlanType {
     );
   }
 
+  /// Hierarchy index for upgrade/downgrade comparison
+  int get tier {
+    switch (this) {
+      case PlanType.free:
+        return 0;
+      case PlanType.starter:
+        return 1;
+      case PlanType.pro:
+        return 2;
+      case PlanType.agency:
+        return 3;
+    }
+  }
+
+  /// Check if this plan is higher than another
+  bool isHigherThan(PlanType other) => tier > other.tier;
+
+  /// Check if this plan is lower than another
+  bool isLowerThan(PlanType other) => tier < other.tier;
+
   /// Get display name for the plan
   String get displayName {
     switch (this) {
@@ -54,9 +74,9 @@ enum PlanType {
       case PlanType.starter:
         return 50;
       case PlanType.pro:
-        return 100;
-      case PlanType.agency:
         return 200;
+      case PlanType.agency:
+        return 500;
     }
   }
 }
