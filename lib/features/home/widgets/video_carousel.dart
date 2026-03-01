@@ -278,7 +278,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     bottomRight: Radius.circular(16),
                                   ),
                                 ),
-                                padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
