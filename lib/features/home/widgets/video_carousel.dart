@@ -72,7 +72,13 @@ class _VideoCarouselState extends State<VideoCarousel> {
       }
       // Play first video immediately after initialization
       if (mounted && !_disposed && index == 0 && controller.value.isInitialized && !controller.value.isPlaying) {
-        controller.play();
+        // Use Future.delayed to ensure play happens after setState
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (!_disposed && controller.value.isInitialized && !controller.value.isPlaying) {
+            controller.play();
+            debugPrint('[VIDEO_CAROUSEL] Playing video 0');
+          }
+        });
       }
     } catch (e) {
       debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar video $index: $e');
@@ -222,7 +228,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                                     bottomRight: Radius.circular(16),
                                   ),
                                 ),
-                                padding: const EdgeInsets.fromLTRB(12, 20, 12, 10),
+                                padding: const EdgeInsets.fromLTRB(12, 20, 12, 4),
                                 child: Row(
                                   children: [
                                     const Icon(Icons.auto_awesome, color: Colors.white, size: 14),
