@@ -29,6 +29,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
     ));
   }
 
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty || _isLoading) return;
@@ -46,32 +53,44 @@ class _AiChatScreenState extends State<AiChatScreen> {
         data: {'message': text},
       );
 
+      if (!mounted) return;
+
       final reply = response.data['reply'] ?? response.data['response'] ?? response.data['message'] ?? '';
       if (reply.isEmpty) {
-        setState(() {
-          _messages.add(_ChatMessage(
-            text: 'Desculpe, não consegui gerar uma resposta. Tente novamente.',
-            isUser: false,
-          ));
-        });
+        if (mounted) {
+          setState(() {
+            _messages.add(_ChatMessage(
+              text: 'Desculpe, não consegui gerar uma resposta. Tente novamente.',
+              isUser: false,
+            ));
+            _isLoading = false;
+          });
+        }
       } else {
-        setState(() {
-          _messages.add(_ChatMessage(
-            text: reply,
-            isUser: false,
-          ));
-        });
+        if (mounted) {
+          setState(() {
+            _messages.add(_ChatMessage(
+              text: reply,
+              isUser: false,
+            ));
+            _isLoading = false;
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _messages.add(_ChatMessage(
-          text: 'Desculpe, ocorreu um erro. Tente novamente.',
-          isUser: false,
-        ));
-      });
+      if (mounted) {
+        setState(() {
+          _messages.add(_ChatMessage(
+            text: 'Desculpe, ocorreu um erro. Tente novamente.',
+            isUser: false,
+          ));
+          _isLoading = false;
+        });
+      }
     } finally {
-      setState(() => _isLoading = false);
-      _scrollToBottom();
+      if (mounted) {
+        _scrollToBottom();
+      }
     }
   }
 
