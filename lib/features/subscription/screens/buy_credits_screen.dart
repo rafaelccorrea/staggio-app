@@ -389,8 +389,7 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                               crossAxisAlignment:
                                   CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Row(
+                                Row(
                                     children: [
                                       Expanded(
                                         child: Text(
@@ -425,7 +424,6 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                                       ),
                                     ],
                                     ],
-                                  ),
                                 ),
                                 SizedBox(height: 2),
                                 Text(

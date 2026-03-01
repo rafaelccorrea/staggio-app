@@ -323,9 +323,7 @@ class ProfileScreen extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(ctx); // close dialog
-                          // Pop all screens back to root first
-                          Navigator.of(context).popUntil((route) => route.isFirst);
-                          // Then emit logout event
+                          // Emit logout event - navigation handled by BlocListener in main.dart
                           context.read<AuthBloc>().add(AuthLogoutRequested());
                         },
                         style: ElevatedButton.styleFrom(

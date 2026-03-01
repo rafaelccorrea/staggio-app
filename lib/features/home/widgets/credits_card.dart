@@ -188,14 +188,14 @@ class CreditsCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => user.plan == 'free'
+                          builder: (_) => user.plan == PlanType.free
                               ? const PlansScreen()
                               : const BuyCreditsScreen(),
                         ),
                       );
                     },
                     child: Text(
-                      user.plan == 'free' ? 'Fazer Upgrade' : 'Comprar Mais',
+                      user.plan == PlanType.free ? 'Fazer Upgrade' : 'Comprar Mais',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.primary,

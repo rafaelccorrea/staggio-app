@@ -95,9 +95,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx); // close dialog
-              // Pop all screens back to root first
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              // Then emit logout event so BlocBuilder rebuilds with guest
+              // Emit logout event - navigation handled by BlocListener in main.dart
               context.read<AuthBloc>().add(AuthLogoutRequested());
             },
             style: ElevatedButton.styleFrom(

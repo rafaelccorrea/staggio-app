@@ -119,11 +119,8 @@ class _LoginScreenState extends State<LoginScreen>
                 password: _passwordController.text,
               );
             }
-            // Pop all screens back to root so BlocBuilder in main.dart
-            // can rebuild with the authenticated AppShell
-            if (mounted) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            }
+            // Navigation is handled automatically by BlocListener in main.dart
+            // using the global navigatorKey to pop all routes
           }
         },
         child: Container(

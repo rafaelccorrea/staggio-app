@@ -14,6 +14,9 @@ import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/shell/screens/app_shell.dart';
 import 'data/models/user_model.dart';
 
+/// Global navigator key to allow clearing the navigation stack from anywhere
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -64,6 +67,7 @@ class StaggioApp extends StatelessWidget {
         builder: (context, themeProvider, _) {
           return MaterialApp(
             title: 'Staggio',
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -88,6 +92,7 @@ class _AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<_AppRoot> {
   bool _splashMinTimePassed = false;
+  bool _initialCheckDone = false;
 
   @override
   void initState() {
@@ -102,43 +107,63 @@ class _AppRootState extends State<_AppRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        // Show splash while waiting for initial auth check OR min time
-        if (state is AuthInitial || state is AuthLoading || !_splashMinTimePassed) {
-          return const _SplashScreen();
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        // Track when initial check is done (any state after AuthInitial)
+        if (state is! AuthInitial && !_initialCheckDone) {
+          setState(() => _initialCheckDone = true);
         }
 
-        // Show onboarding only on first launch
-        if (!widget.onboardingDone) {
-          return OnboardingScreen(
-            onComplete: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('onboarding_done', true);
-              if (context.mounted) {
-                // Rebuild to show app shell
-                (context as Element).markNeedsBuild();
-              }
-            },
-          );
+        // When auth state changes to Authenticated or Unauthenticated,
+        // clear the entire navigation stack so the root widget is visible
+        if (state is AuthAuthenticated || state is AuthUnauthenticated) {
+          // Clear all pushed routes back to root
+          navigatorKey.currentState?.popUntil((route) => route.isFirst);
         }
+      },
+      child: BlocBuilder<AuthBloc, AuthState>(
+        // Only rebuild on meaningful state changes (not AuthLoading/AuthError)
+        buildWhen: (previous, current) {
+          return current is AuthInitial ||
+              current is AuthAuthenticated ||
+              current is AuthUnauthenticated;
+        },
+        builder: (context, state) {
+          // Show splash only during initial app startup
+          if (!_initialCheckDone || !_splashMinTimePassed) {
+            return const _SplashScreen();
+          }
 
-        // Authenticated user
-        if (state is AuthAuthenticated) {
+          // Show onboarding only on first launch
+          if (!widget.onboardingDone) {
+            return OnboardingScreen(
+              onComplete: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('onboarding_done', true);
+                if (context.mounted) {
+                  (context as Element).markNeedsBuild();
+                }
+              },
+            );
+          }
+
+          // Authenticated user
+          if (state is AuthAuthenticated) {
+            return AppShell(
+              key: ValueKey('auth_${state.user.id}'),
+              user: state.user,
+              apiClient: widget.apiClient,
+            );
+          }
+
+          // Guest / unauthenticated / error - show app as guest
           return AppShell(
-            key: ValueKey('auth_${state.user.id}'),
-            user: state.user,
+            key: const ValueKey('guest'),
+            user: UserModel.guest(),
             apiClient: widget.apiClient,
           );
-        }
-
-        // Guest / unauthenticated / error - show app as guest
-        return AppShell(
-          key: const ValueKey('guest'),
-          user: UserModel.guest(),
-          apiClient: widget.apiClient,
-        );
-      },
+        },
+      ),
     );
   }
 }
