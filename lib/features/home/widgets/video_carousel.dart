@@ -51,7 +51,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
         final firstController = _controllers[0];
         if (!firstController.value.isInitialized) {
           await firstController.initialize().timeout(
-            const Duration(seconds: 10),
+            const Duration(seconds: 20),
             onTimeout: () {
               debugPrint('[VIDEO_CAROUSEL] Timeout ao inicializar primeiro video');
             },
@@ -91,7 +91,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
         final controller = _controllers[i];
         if (!controller.value.isInitialized) {
           await controller.initialize().timeout(
-            const Duration(seconds: 8),
+            const Duration(seconds: 12),
             onTimeout: () {
               debugPrint('[VIDEO_CAROUSEL] Timeout ao pre-carregar video $i');
             },
