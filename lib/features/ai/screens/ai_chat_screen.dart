@@ -46,12 +46,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
         data: {'message': text},
       );
 
-      setState(() {
-        _messages.add(_ChatMessage(
-          text: response.data['reply'] ?? 'Sem resposta',
-          isUser: false,
-        ));
-      });
+      final reply = response.data['reply'] ?? response.data['response'] ?? response.data['message'] ?? '';
+      if (reply.isEmpty) {
+        setState(() {
+          _messages.add(_ChatMessage(
+            text: 'Desculpe, não consegui gerar uma resposta. Tente novamente.',
+            isUser: false,
+          ));
+        });
+      } else {
+        setState(() {
+          _messages.add(_ChatMessage(
+            text: reply,
+            isUser: false,
+          ));
+        });
+      }
     } catch (e) {
       setState(() {
         _messages.add(_ChatMessage(

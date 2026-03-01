@@ -211,10 +211,12 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.5),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : Colors.black.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Iconsax.close_circle, color: Colors.white, size: 20),
+                        child: Icon(Iconsax.close_circle, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -279,12 +281,12 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
               child: ElevatedButton.icon(
                 onPressed: _selectedImage == null || _isLoading ? null : _generate,
                 icon: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white, strokeWidth: 2),
                       )
-                    : const Icon(Iconsax.magic_star, color: Colors.white),
+                    : Icon(Iconsax.magic_star, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                 label: Text(_isLoading ? 'Gerando...' : 'Gerar Staging'),
               ),
             ),

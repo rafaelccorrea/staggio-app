@@ -20,6 +20,9 @@ import '../../ai/screens/ai_terrain_screen.dart';
 import '../../ai/screens/ai_photo_enhance_screen.dart';
 import '../../../core/services/plan_gating.dart';
 import '../../../core/services/auth_gate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
 
 class AppShell extends StatefulWidget {
   final UserModel user;
@@ -31,7 +34,7 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -40,12 +43,27 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _screens = [
       HomeScreen(user: widget.user),
       PropertiesScreen(apiClient: widget.apiClient),
       AiChatScreen(apiClient: widget.apiClient),
       ProfileScreen(user: widget.user),
     ];
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      // App is closing, perform logout
+      context.read<AuthBloc>().add(AuthLogoutRequested());
+    }
   }
 
   void _navigateToScreen(Widget screen) {
