@@ -114,7 +114,9 @@ class AppDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   // Plan badge and credits
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -134,7 +136,6 @@ class AppDrawer extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
