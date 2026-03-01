@@ -16,6 +16,14 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
 
+  // Centralized video URLs - same as used in ShowcaseSection/VideoCarousel
+  static const List<String> videoUrls = [
+    'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_house_cinematic_d46fb731.mp4',
+    'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_land_transformation_00e2632a.mp4',
+    'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondcinematicrealestatevideoofamodernhouseforsaleShotbreakdown-5secondssmoothdroneshotappro_dce0c79f.mp4',
+    'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondarchitecturaltransformationvideoSinglefixedcameraanglethroughouttheentirevideoConsistentdaylightlightingandsamesundirectionStage1(10seconds)emptygrassylot_da23cffb.mp4',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -30,29 +38,23 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _preloadVideosAndComplete() async {
     try {
-      final videoUrls = [
-        'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_1_153fddcf.mp4',
-        'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_video_2_8aa6a5e0.mp4',
-      ];
       debugPrint('[SPLASH] Starting to preload ${videoUrls.length} videos');
 
-      // Preload videos
-      debugPrint('[SPLASH] Calling preloadVideos...');
-      await VideoCacheService.preloadVideos(videoUrls);
-      debugPrint('[SPLASH] Videos preloaded successfully');
+      // Start preloading all videos AND wait minimum 3 seconds in parallel
+      final results = await Future.wait([
+        VideoCacheService.preloadVideos(videoUrls),
+        Future.delayed(const Duration(milliseconds: 3000)),
+      ]);
 
-      // Wait minimum 3 seconds for splash animation and video loading
-      debugPrint('[SPLASH] Waiting 3 seconds before completing...');
-      await Future.delayed(const Duration(milliseconds: 3000));
+      debugPrint('[SPLASH] Videos preloaded and minimum time passed');
 
       if (mounted) {
         widget.onComplete();
       }
     } catch (e) {
       debugPrint('[SPLASH] Error preloading videos: $e');
-      debugPrint('[SPLASH] Stack trace: ${StackTrace.current}');
-      // Continue anyway after 5 seconds
-      await Future.delayed(const Duration(milliseconds: 5000));
+      // Continue anyway after 4 seconds
+      await Future.delayed(const Duration(milliseconds: 4000));
       if (mounted) {
         widget.onComplete();
       }

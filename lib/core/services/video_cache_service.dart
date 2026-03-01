@@ -23,7 +23,6 @@ class VideoCacheService {
         _cache.remove(url);
         _initFutures.remove(url);
       } else {
-        dev.log('[VIDEO_CACHE] Usando vídeo em cache: $url', name: 'VideoCacheService');
         return cached;
       }
     }
@@ -31,15 +30,18 @@ class VideoCacheService {
     dev.log('[VIDEO_CACHE] Criando novo controller para: $url', name: 'VideoCacheService');
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     _cache[url] = controller;
-    // Do NOT call initialize here - let the caller handle it
     return controller;
   }
 
-  /// Get the initialization future for a controller
+  /// Ensure a video controller is fully initialized before returning
   static Future<void> ensureInitialized(String url) async {
+    // If already has an init future, await it
     if (_initFutures.containsKey(url)) {
       await _initFutures[url];
-      return;
+      // Verify it actually initialized
+      if (isReady(url)) return;
+      // If not ready, remove stale future and retry
+      _initFutures.remove(url);
     }
 
     final controller = getController(url);
@@ -57,7 +59,7 @@ class VideoCacheService {
     try {
       controller.setVolume(0.0);
       await controller.initialize().timeout(
-        const Duration(seconds: 15),
+        const Duration(seconds: 20),
         onTimeout: () {
           dev.log('[VIDEO_CACHE] Timeout initializing: $url', name: 'VideoCacheService');
         },
@@ -66,6 +68,8 @@ class VideoCacheService {
         controller.setLooping(true);
         controller.setVolume(0.0);
         dev.log('[VIDEO_CACHE] Initialized successfully: $url', name: 'VideoCacheService');
+      } else {
+        dev.log('[VIDEO_CACHE] Failed to initialize (not ready after init): $url', name: 'VideoCacheService');
       }
     } catch (e) {
       dev.log('[VIDEO_CACHE] Error initializing $url: $e', name: 'VideoCacheService');
@@ -82,10 +86,14 @@ class VideoCacheService {
     }
   }
 
-  /// Pre-load videos in background
+  /// Pre-load videos sequentially
   static Future<void> preloadVideos(List<String> videoUrls) async {
     if (_isPreloading) {
-      dev.log('[VIDEO_CACHE] Pré-carregamento já em progresso', name: 'VideoCacheService');
+      dev.log('[VIDEO_CACHE] Pré-carregamento já em progresso, aguardando...', name: 'VideoCacheService');
+      // Wait for current preloading to finish instead of skipping
+      while (_isPreloading) {
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
       return;
     }
 
@@ -118,7 +126,9 @@ class VideoCacheService {
   static Future<void> clearCache() async {
     dev.log('[VIDEO_CACHE] Limpando cache de vídeos', name: 'VideoCacheService');
     for (final controller in _cache.values) {
-      await controller.dispose();
+      try {
+        await controller.dispose();
+      } catch (_) {}
     }
     _cache.clear();
     _initFutures.clear();
@@ -127,7 +137,9 @@ class VideoCacheService {
   /// Clear a specific video from cache
   static Future<void> clearVideo(String url) async {
     if (_cache.containsKey(url)) {
-      await _cache[url]!.dispose();
+      try {
+        await _cache[url]!.dispose();
+      } catch (_) {}
       _cache.remove(url);
       _initFutures.remove(url);
       dev.log('[VIDEO_CACHE] Vídeo removido do cache: $url', name: 'VideoCacheService');

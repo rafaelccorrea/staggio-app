@@ -38,50 +38,60 @@ class _VideoCarouselState extends State<VideoCarousel> {
   }
 
   Future<void> _initVideos() async {
-    // Initialize all videos sequentially
     for (int i = 0; i < widget.videos.length; i++) {
       if (_disposed) return;
 
       final url = widget.videos[i].url;
+
+      // Ensure video is fully initialized (may already be cached from splash)
       await VideoCacheService.ensureInitialized(url);
 
       if (_disposed) return;
 
-      final controller = VideoCacheService.getController(url);
-      if (controller.value.isInitialized) {
+      // Double-check the controller is actually ready
+      if (VideoCacheService.isReady(url)) {
+        final controller = VideoCacheService.getController(url);
         controller.setVolume(0.0);
-
-        // Auto-play first video
-        if (i == 0 && _currentIndex == 0) {
-          controller.play();
-          debugPrint('[VIDEO_CAROUSEL] Auto-playing video 0');
-        }
 
         if (mounted) {
           setState(() {
             _ready[i] = true;
           });
         }
+
+        // Auto-play the first video ONLY after setState confirms it's ready
+        if (i == 0 && _currentIndex == 0 && !_disposed) {
+          // Small delay to ensure the VideoPlayer widget has been built
+          await Future.delayed(const Duration(milliseconds: 100));
+          if (!_disposed && mounted) {
+            controller.play();
+            debugPrint('[VIDEO_CAROUSEL] Auto-playing video 0 (confirmed ready)');
+          }
+        }
+      } else {
+        debugPrint('[VIDEO_CAROUSEL] Video $i failed to initialize: $url');
       }
     }
   }
 
   void _onPageChanged(int index) {
     if (_disposed) return;
+    final prevIndex = _currentIndex;
     setState(() => _currentIndex = index);
 
-    // Pause all, play current
-    for (int i = 0; i < widget.videos.length; i++) {
-      final url = widget.videos[i].url;
-      if (!VideoCacheService.isReady(url)) continue;
-
-      final controller = VideoCacheService.getController(url);
+    // Pause previous video
+    final prevUrl = widget.videos[prevIndex].url;
+    if (VideoCacheService.isReady(prevUrl)) {
       try {
-        if (i == index) {
-          controller.play();
-        } else {
-          controller.pause();
-        }
+        VideoCacheService.getController(prevUrl).pause();
+      } catch (_) {}
+    }
+
+    // Play current video
+    final currentUrl = widget.videos[index].url;
+    if (VideoCacheService.isReady(currentUrl)) {
+      try {
+        VideoCacheService.getController(currentUrl).play();
       } catch (_) {}
     }
   }

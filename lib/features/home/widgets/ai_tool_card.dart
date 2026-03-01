@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'dart:ui';
 import '../../../core/constants/ai_features.dart';
+import '../../../core/theme/app_theme.dart';
 import 'ai_feature_info_modal.dart';
 
-class AiToolCard extends StatefulWidget {
+class AiToolCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
@@ -24,236 +23,177 @@ class AiToolCard extends StatefulWidget {
   });
 
   @override
-  State<AiToolCard> createState() => _AiToolCardState();
-}
-
-class _AiToolCardState extends State<AiToolCard> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _isHovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Extract primary color from gradient for accent usage
+    final gradientColors = (gradient as LinearGradient).colors;
+    final accentColor = gradientColors[0];
+
     return GestureDetector(
-      onTap: widget.onTap,
-      child: MouseRegion(
-        onEnter: (_) {
-          setState(() => _isHovered = true);
-          _controller.forward();
-        },
-        onExit: (_) {
-          setState(() => _isHovered = false);
-          _controller.reverse();
-        },
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? accentColor.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.12),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: isDark ? 0.08 : 0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+            if (!isDark)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
         child: Stack(
           children: [
-            // Animated background blur effect
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: 1 + (_controller.value * 0.05),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: widget.gradient.colors[0].withValues(
-                            alpha: 0.2 + (_controller.value * 0.2),
-                          ),
-                          blurRadius: 20 + (_controller.value * 20),
-                          offset: Offset(0, 8 + (_controller.value * 4)),
-                        ),
-                      ],
-                    ),
+            // Subtle gradient accent at top
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 4,
+                decoration: BoxDecoration(
+                  gradient: gradient,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                );
-              },
-            ),
-
-            // Main card with glassmorphism
-            Container(
-              decoration: BoxDecoration(
-                gradient: widget.gradient,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 1.5,
                 ),
               ),
-              child: Stack(
+            ),
+
+            // Main content
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Frosted glass effect
-                  BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Colors.white.withValues(alpha: 0.1),
-                            Colors.white.withValues(alpha: 0.05),
-                          ],
+                  // Icon container with gradient background
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          accentColor.withValues(alpha: 0.15),
+                          gradientColors.last.withValues(alpha: 0.08),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: accentColor,
+                      size: 24,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Text content
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                          letterSpacing: -0.3,
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Icon with animation
-                        AnimatedBuilder(
-                          animation: _controller,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, -_controller.value * 4),
-                              child: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Icon(
-                                  widget.icon,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                              ),
-                            );
-                          },
+                      const SizedBox(height: 6),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.5)
+                              : Colors.grey[500],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.3,
                         ),
-
-                        // Text content
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                height: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.subtitle,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.75),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                height: 1.4,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Arrow indicator (appears on hover)
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return Positioned(
-                        bottom: 12 + (_controller.value * 4),
-                        right: 12,
-                        child: Opacity(
-                          opacity: _controller.value,
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Icon(
-                              Iconsax.arrow_right_3,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
             // Info button (top right)
-            if (widget.featureKey != null)
+            if (featureKey != null)
               Positioned(
-                top: 12,
+                top: 14,
                 right: 12,
                 child: GestureDetector(
                   onTap: () {
-                    final featureInfo = AiFeatures.getFeatureInfo(widget.featureKey!);
+                    final featureInfo = AiFeatures.getFeatureInfo(featureKey!);
                     if (featureInfo != null) {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => AiFeatureInfoModal(featureInfo: featureInfo),
+                        builder: (context) =>
+                            AiFeatureInfoModal(featureInfo: featureInfo),
                       );
                     }
                   },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.25),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(
-                          Iconsax.info_circle,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.06)
+                          : Colors.grey.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Iconsax.info_circle,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.4)
+                          : Colors.grey[400],
+                      size: 16,
                     ),
                   ),
                 ),
               ),
+
+            // Arrow indicator (bottom right)
+            Positioned(
+              bottom: 14,
+              right: 12,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Iconsax.arrow_right_3,
+                  color: accentColor,
+                  size: 14,
+                ),
+              ),
+            ),
           ],
         ),
       ),

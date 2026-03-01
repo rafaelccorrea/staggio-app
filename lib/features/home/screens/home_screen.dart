@@ -14,7 +14,6 @@ import '../../ai/screens/ai_terrain_screen.dart';
 import '../../ai/screens/ai_photo_enhance_screen.dart';
 import '../../ai/screens/generations_history_screen.dart';
 import '../../../core/services/plan_gating.dart';
-import '../../../core/services/video_cache_service.dart';
 import '../../video/screens/video_generation_screen.dart';
 
 
@@ -28,23 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Pre-load showcase videos in background
-    _preloadShowcaseVideos();
-  }
-
-  Future<void> _preloadShowcaseVideos() async {
-    final videoUrls = [
-      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_house_cinematic_d46fb731.mp4',
-      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/staggio_land_transformation_00e2632a.mp4',
-      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondcinematicrealestatevideoofamodernhouseforsaleShotbreakdown-5secondssmoothdroneshotappro_dce0c79f.mp4',
-      'https://d2xsxph8kpxj0f.cloudfront.net/310519663325645759/o8cLHeyJ6TJo5M4wzqsPRL/Gen-4Turbo30-secondarchitecturaltransformationvideoSinglefixedcameraanglethroughouttheentirevideoConsistentdaylightlightingandsamesundirectionStage1(10seconds)emptygrassylot_da23cffb.mp4',
-    ];
-    // Pre-load in background without blocking UI
-    await VideoCacheService.preloadVideos(videoUrls);
-  }
+  // Videos are preloaded in SplashScreen - no need to preload again here
 
   ApiClient get _apiClient => ApiClient();
 
@@ -322,9 +305,9 @@ class _HomeScreenState extends State<HomeScreen> {
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: 0.95,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.92,
                 ),
                 delegate: SliverChildListDelegate([
                   AiToolCard(
