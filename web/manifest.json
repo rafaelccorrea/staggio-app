@@ -1,11 +1,11 @@
 {
-    "name": "staggio",
-    "short_name": "staggio",
+    "name": "Staggio - IA para Corretores",
+    "short_name": "Staggio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A1628",
+    "theme_color": "#1E88E5",
+    "description": "Staggio - IA para Corretores de Imóveis. Home Staging Virtual, Descrições Automáticas e muito mais.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

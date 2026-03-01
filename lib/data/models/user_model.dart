@@ -83,6 +83,12 @@ class UserModel extends Equatable {
 
   bool get hasCredits => aiCreditsUsed < aiCreditsLimit;
 
+  int get aiCreditsRemaining => aiCreditsLimit - aiCreditsUsed;
+
+  int get totalProperties => 0; // Updated from API
+
+  int get totalGenerations => aiCreditsUsed;
+
   String get planDisplayName {
     switch (plan) {
       case 'starter':

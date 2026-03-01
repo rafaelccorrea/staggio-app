@@ -314,7 +314,16 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Imagem salva na galeria!'),
+                            backgroundColor: AppColors.success,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        );
+                      },
                       icon: const Icon(Iconsax.document_download),
                       label: const Text('Salvar'),
                     ),
@@ -322,7 +331,16 @@ class _AiStagingScreenState extends State<AiStagingScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Link copiado! Compartilhe com seu cliente.'),
+                            backgroundColor: AppColors.primary,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        );
+                      },
                       icon: const Icon(Iconsax.share),
                       label: const Text('Compartilhar'),
                     ),

@@ -9,7 +9,13 @@ import '../../properties/screens/properties_screen.dart';
 import '../../ai/screens/ai_chat_screen.dart';
 import '../../ai/screens/ai_staging_screen.dart';
 import '../../ai/screens/ai_description_screen.dart';
+import '../../ai/screens/generations_history_screen.dart';
 import '../../profile/screens/profile_screen.dart';
+import '../../subscription/screens/plans_screen.dart';
+import '../../settings/screens/settings_screen.dart';
+import '../../help/screens/help_screen.dart';
+import '../../about/screens/about_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class AppShell extends StatefulWidget {
   final UserModel user;
@@ -23,6 +29,7 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   late final List<Widget> _screens;
 
@@ -37,9 +44,84 @@ class _AppShellState extends State<AppShell> {
     ];
   }
 
+  void _navigateToScreen(Widget screen) {
+    Navigator.of(context).pop(); // close drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
+
+  void _switchTab(int index) {
+    Navigator.of(context).pop(); // close drawer
+    setState(() => _currentIndex = index);
+  }
+
+  void _handleLogout() {
+    Navigator.of(context).pop(); // close drawer
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Sair da Conta'),
+        content: const Text('Tem certeza que deseja sair?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              // Navigate back to login
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Sair'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: AppDrawer(
+        userName: widget.user.name,
+        userEmail: widget.user.email,
+        userPlan: widget.user.planDisplayName,
+        aiCredits: widget.user.aiCreditsRemaining,
+        onHomeTap: () => _switchTab(0),
+        onPropertiesTap: () => _switchTab(1),
+        onStagingTap: () => _navigateToScreen(
+          AiStagingScreen(apiClient: widget.apiClient),
+        ),
+        onDescriptionTap: () => _navigateToScreen(
+          AiDescriptionScreen(apiClient: widget.apiClient),
+        ),
+        onChatTap: () {
+          Navigator.of(context).pop();
+          setState(() => _currentIndex = 2);
+        },
+        onHistoryTap: () => _navigateToScreen(
+          GenerationsHistoryScreen(apiClient: widget.apiClient),
+        ),
+        onPlansTap: () => _navigateToScreen(const PlansScreen()),
+        onProfileTap: () {
+          Navigator.of(context).pop();
+          setState(() => _currentIndex = 3);
+        },
+        onSettingsTap: () => _navigateToScreen(const SettingsScreen()),
+        onHelpTap: () => _navigateToScreen(const HelpScreen()),
+        onAboutTap: () => _navigateToScreen(const AboutScreen()),
+        onLogout: _handleLogout,
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -196,7 +278,18 @@ class _AppShellState extends State<AppShell> {
               title: 'Visão de Terreno',
               subtitle: 'Visualize construções',
               gradient: AppColors.terrainGradient,
-              onTap: () => Navigator.pop(ctx),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Visão de Terreno chegando em breve!'),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
             ),
             _buildAiToolItem(
               context,
@@ -220,7 +313,36 @@ class _AppShellState extends State<AppShell> {
               title: 'Melhorar Foto',
               subtitle: 'Fotos profissionais com IA',
               gradient: AppColors.cardGradient,
-              onTap: () => Navigator.pop(ctx),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Melhorar Foto chegando em breve!'),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
+            ),
+            _buildAiToolItem(
+              context,
+              icon: Iconsax.clock,
+              title: 'Histórico',
+              subtitle: 'Veja suas gerações anteriores',
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6C5CE7), Color(0xFF8B5CF6)],
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => GenerationsHistoryScreen(apiClient: widget.apiClient),
+                  ),
+                );
+              },
             ),
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],

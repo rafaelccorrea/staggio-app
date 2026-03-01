@@ -15,235 +15,340 @@ class _PlansScreenState extends State<PlansScreen> {
 
   final List<_PlanData> _plans = [
     _PlanData(
-      name: 'Gratuito',
-      price: 'R\$ 0',
-      period: '/mês',
-      credits: '5 créditos IA/mês',
-      features: [
-        'Descrições automáticas',
-        'Até 5 imóveis',
-        'Assistente básico',
-      ],
-      color: AppColors.textSecondary,
-      isPopular: false,
-    ),
-    _PlanData(
       name: 'Starter',
       price: 'R\$ 39,90',
       period: '/mês',
-      credits: '20 créditos IA/mês',
+      credits: '10 créditos IA/mês',
       features: [
         'Home Staging Virtual',
         'Descrições automáticas',
-        'Melhoria de fotos',
-        'Até 50 imóveis',
-        'Assistente IA completo',
+        'Até 20 imóveis',
+        'Suporte por email',
       ],
-      color: AppColors.primary,
-      isPopular: true,
+      color: const Color(0xFF64748B),
+      isPopular: false,
     ),
     _PlanData(
       name: 'Pro',
       price: 'R\$ 79,90',
       period: '/mês',
-      credits: '80 créditos IA/mês',
+      credits: '50 créditos IA/mês',
       features: [
-        'Tudo do Starter',
+        'Todas as ferramentas IA',
         'Visão de Terrenos',
-        'Tours Virtuais',
+        'Melhorar Fotos',
+        'Chat IA ilimitado',
         'Imóveis ilimitados',
-        'Assistente IA Premium',
         'Suporte prioritário',
       ],
-      color: AppColors.accent,
-      isPopular: false,
+      color: AppColors.primary,
+      isPopular: true,
     ),
     _PlanData(
       name: 'Imobiliária',
       price: 'R\$ 199,90',
       period: '/mês',
-      credits: 'Créditos ilimitados',
+      credits: '200 créditos IA/mês',
       features: [
         'Tudo do Pro',
         'Múltiplos corretores',
-        'Painel de gestão',
+        'Dashboard analytics',
+        'API de integração',
         'Marca própria',
-        'API dedicada',
-        'Suporte VIP',
+        'Suporte dedicado 24/7',
       ],
-      color: AppColors.secondary,
+      color: const Color(0xFF7C3AED),
       isPopular: false,
     ),
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Planos'),
-        leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
-          onPressed: () => Navigator.pop(context),
-        ),
+  void _handleSubscribe() {
+    final plan = _plans[_selectedPlan];
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      body: SingleChildScrollView(
+      builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: plan.color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Iconsax.crown_1, size: 32, color: plan.color),
+            ),
+            const SizedBox(height: 16),
             Text(
-              'Escolha seu plano',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ).animate().fadeIn(duration: 500.ms),
+              'Assinar ${plan.name}',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             Text(
-              'Desbloqueie todo o poder da IA para seus imóveis',
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ).animate().fadeIn(delay: 100.ms, duration: 500.ms),
-            const SizedBox(height: 32),
-
-            ...List.generate(_plans.length, (index) {
-              final plan = _plans[index];
-              final isSelected = _selectedPlan == index;
-
-              return GestureDetector(
-                onTap: () => setState(() => _selectedPlan = index),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? plan.color : AppColors.surfaceVariant,
-                      width: isSelected ? 2 : 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: plan.color.withValues(alpha: 0.15),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            plan.name,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          if (plan.isPopular) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: plan.color,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                'Popular',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                          const Spacer(),
-                          Radio<int>(
-                            value: index,
-                            groupValue: _selectedPlan,
-                            onChanged: (v) => setState(() => _selectedPlan = v!),
-                            activeColor: plan.color,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            plan.price,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: plan.color,
-                            ),
-                          ),
-                          Text(
-                            plan.period,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textTertiary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        plan.credits,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ...plan.features.map((feature) => Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Row(
-                              children: [
-                                Icon(Iconsax.tick_circle,
-                                    color: plan.color, size: 16),
-                                const SizedBox(width: 8),
-                                Text(
-                                  feature,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              )
-                  .animate()
-                  .fadeIn(delay: Duration(milliseconds: 200 + index * 100), duration: 500.ms)
-                  .slideY(begin: 0.1);
-            }),
-
+              '${plan.price}${plan.period}',
+              style: TextStyle(fontSize: 18, color: plan.color, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 16),
-
+            Text(
+              'Você será redirecionado para o checkout seguro do Stripe para finalizar sua assinatura.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              height: 56,
+              height: 54,
               child: ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  _selectedPlan == 0 ? 'Plano Atual' : 'Assinar Agora',
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Redirecionando para checkout do plano ${plan.name}...'),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: plan.color,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: plan.color,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Confirmar Assinatura',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
-
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F7FF),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+              ],
+            ),
+            child: const Icon(Iconsax.arrow_left, size: 20, color: AppColors.textPrimary),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Planos',
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              physics: const BouncingScrollPhysics(),
+              children: [
+                Center(
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Escolha o plano ideal',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Potencialize suas vendas com IA',
+                        style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ).animate().fadeIn(duration: 500.ms),
+                const SizedBox(height: 24),
+                ...List.generate(_plans.length, (index) {
+                  final plan = _plans[index];
+                  final isSelected = _selectedPlan == index;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedPlan = index),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: isSelected ? plan.color : Colors.transparent,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isSelected
+                                ? plan.color.withValues(alpha: 0.15)
+                                : Colors.black.withValues(alpha: 0.04),
+                            blurRadius: isSelected ? 20 : 12,
+                            offset: Offset(0, isSelected ? 8 : 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: plan.color.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  index == 0 ? Iconsax.star : index == 1 ? Iconsax.crown_1 : Iconsax.building_4,
+                                  color: plan.color,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      plan.name,
+                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                    ),
+                                    Text(
+                                      plan.credits,
+                                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (plan.isPopular)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.primaryGradient,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Text(
+                                    'Popular',
+                                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              if (isSelected)
+                                Icon(Iconsax.tick_circle, color: plan.color, size: 24),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                plan.price,
+                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: plan.color),
+                              ),
+                              Text(plan.period, style: TextStyle(fontSize: 14, color: AppColors.textTertiary)),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Divider(color: AppColors.surfaceVariant),
+                          const SizedBox(height: 10),
+                          ...plan.features.map((feature) => Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Row(
+                                  children: [
+                                    Icon(Iconsax.tick_circle, color: plan.color, size: 16),
+                                    const SizedBox(width: 8),
+                                    Text(feature, style: const TextStyle(fontSize: 13)),
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                  ).animate().fadeIn(delay: Duration(milliseconds: 200 + index * 150), duration: 500.ms).slideY(begin: 0.1);
+                }),
+              ],
+            ),
+          ),
+
+          // Fixed Subscribe Button
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -4)),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: GestureDetector(
+                onTap: _handleSubscribe,
+                child: Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        _plans[_selectedPlan].color,
+                        _plans[_selectedPlan].color.withValues(alpha: 0.8),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _plans[_selectedPlan].color.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Assinar ${_plans[_selectedPlan].name} - ${_plans[_selectedPlan].price}/mês',
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

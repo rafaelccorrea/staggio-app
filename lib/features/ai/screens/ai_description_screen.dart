@@ -314,7 +314,17 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Iconsax.share, size: 20),
-                            onPressed: () {},
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: _result!));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Texto copiado! Cole no WhatsApp, Instagram ou portal.'),
+                                  backgroundColor: AppColors.primary,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

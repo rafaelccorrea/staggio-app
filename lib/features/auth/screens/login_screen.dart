@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onRegisterTap;
@@ -40,6 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -56,217 +59,360 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
-
-                // Logo
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Iconsax.magic_star,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                ).animate().fadeIn(duration: 600.ms).scale(
-                      begin: const Offset(0.5, 0.5),
-                      curve: Curves.elasticOut,
-                      duration: 800.ms,
-                    ),
-
-                const SizedBox(height: 40),
-
-                // Welcome text
-                Center(
-                  child: Text(
-                    'Bem-vindo de volta',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 200.ms, duration: 600.ms)
-                    .slideY(begin: 0.3),
-
-                const SizedBox(height: 8),
-
-                Center(
-                  child: Text(
-                    'Entre na sua conta Staggio',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 300.ms, duration: 600.ms)
-                    .slideY(begin: 0.3),
-
-                const SizedBox(height: 48),
-
-                // Form
-                Form(
-                  key: _formKey,
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF6C5CE7),
+                Color(0xFF8B5CF6),
+                Color(0xFFEDE9FE),
+                Color(0xFFF8F7FF),
+              ],
+              stops: [0.0, 0.15, 0.4, 0.6],
+            ),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: size.height - MediaQuery.of(context).padding.top,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Column(
                     children: [
-                      // Email
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          prefixIcon: Icon(
-                            Iconsax.sms,
-                            color: AppColors.textTertiary,
-                          ),
+                      SizedBox(height: size.height * 0.06),
+
+                      // Logo and title
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Informe seu email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Email inválido';
-                          }
-                          return null;
-                        },
-                      )
-                          .animate()
-                          .fadeIn(delay: 400.ms, duration: 600.ms)
-                          .slideX(begin: -0.1),
+                        child: const Icon(
+                          Iconsax.magic_star,
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                      ).animate().fadeIn(duration: 600.ms).scale(
+                            begin: const Offset(0.5, 0.5),
+                            curve: Curves.elasticOut,
+                            duration: 1000.ms,
+                          ),
 
                       const SizedBox(height: 16),
 
-                      // Password
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: 'Senha',
-                          prefixIcon: Icon(
-                            Iconsax.lock,
-                            color: AppColors.textTertiary,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Iconsax.eye_slash
-                                  : Iconsax.eye,
-                              color: AppColors.textTertiary,
-                            ),
-                            onPressed: () {
-                              setState(
-                                  () => _obscurePassword = !_obscurePassword);
-                            },
-                          ),
+                      const Text(
+                        'Staggio',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 1.5,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Informe sua senha';
-                          }
-                          if (value.length < 6) {
-                            return 'Mínimo 6 caracteres';
-                          }
-                          return null;
-                        },
-                      )
-                          .animate()
-                          .fadeIn(delay: 500.ms, duration: 600.ms)
-                          .slideX(begin: -0.1),
+                      ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 6),
 
-                      // Forgot password
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Esqueceu a senha?',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                      Text(
+                        'IA para Corretores',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w400,
                         ),
-                      ),
+                      ).animate().fadeIn(delay: 300.ms, duration: 600.ms),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: size.height * 0.05),
 
-                      // Login button
-                      BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed:
-                                  state is AuthLoading ? null : _onLogin,
-                              child: state is AuthLoading
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2.5,
-                                      ),
-                                    )
-                                  : const Text('Entrar'),
-                            ),
-                          );
-                        },
-                      )
-                          .animate()
-                          .fadeIn(delay: 600.ms, duration: 600.ms)
-                          .slideY(begin: 0.3),
-
-                      const SizedBox(height: 32),
-
-                      // Divider
-                      Row(
-                        children: [
-                          Expanded(
-                              child: Divider(color: AppColors.surfaceVariant)),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'ou',
-                              style: TextStyle(color: AppColors.textTertiary),
-                            ),
-                          ),
-                          Expanded(
-                              child: Divider(color: AppColors.surfaceVariant)),
-                        ],
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // Google login button
-                      SizedBox(
+                      // Login card
+                      Container(
                         width: double.infinity,
-                        height: 56,
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Iconsax.google, size: 22),
-                          label: const Text('Continuar com Google'),
+                        padding: const EdgeInsets.all(28),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 30,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
                         ),
-                      ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Bem-vindo de volta',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Faça login para continuar',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 28),
 
-                      const SizedBox(height: 40),
+                              // Email field
+                              TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                style: const TextStyle(fontSize: 15),
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  hintText: 'seu@email.com',
+                                  prefixIcon: Icon(Iconsax.sms,
+                                      color: AppColors.primary.withValues(alpha: 0.7)),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF8F7FF),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.surfaceVariant),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.error),
+                                  ),
+                                ),
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) return 'Informe o email';
+                                  if (!v.contains('@')) return 'Email inválido';
+                                  return null;
+                                },
+                              ),
+
+                              const SizedBox(height: 18),
+
+                              // Password field
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                style: const TextStyle(fontSize: 15),
+                                decoration: InputDecoration(
+                                  labelText: 'Senha',
+                                  hintText: '••••••••',
+                                  prefixIcon: Icon(Iconsax.lock,
+                                      color: AppColors.primary.withValues(alpha: 0.7)),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword ? Iconsax.eye_slash : Iconsax.eye,
+                                      color: AppColors.textSecondary,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        setState(() => _obscurePassword = !_obscurePassword),
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF8F7FF),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.surfaceVariant),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: AppColors.error),
+                                  ),
+                                ),
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) return 'Informe a senha';
+                                  if (v.length < 6) return 'Mínimo 6 caracteres';
+                                  return null;
+                                },
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              // Forgot password
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const ForgotPasswordScreen(),
+                                      ),
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(0, 0),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Text(
+                                    'Esqueceu a senha?',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // Login button
+                              BlocBuilder<AuthBloc, AuthState>(
+                                builder: (context, state) {
+                                  return SizedBox(
+                                    width: double.infinity,
+                                    height: 54,
+                                    child: ElevatedButton(
+                                      onPressed: state is AuthLoading ? null : _onLogin,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: state is AuthLoading
+                                          ? const SizedBox(
+                                              width: 22,
+                                              height: 22,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2.5,
+                                              ),
+                                            )
+                                          : const Text(
+                                              'Entrar',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // Divider
+                              Row(
+                                children: [
+                                  Expanded(child: Divider(color: AppColors.surfaceVariant)),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    child: Text(
+                                      'ou continue com',
+                                      style: TextStyle(
+                                        color: AppColors.textTertiary,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(child: Divider(color: AppColors.surfaceVariant)),
+                                ],
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // Social login buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: const Text('Login com Google em breve!'),
+                                            behavior: SnackBarBehavior.floating,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.g_mobiledata_rounded, size: 24),
+                                      label: const Text('Google'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        side: BorderSide(color: AppColors.surfaceVariant),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: const Text('Login com Apple em breve!'),
+                                            behavior: SnackBarBehavior.floating,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.apple, size: 22),
+                                      label: const Text('Apple'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        side: BorderSide(color: AppColors.surfaceVariant),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                          .animate()
+                          .fadeIn(delay: 400.ms, duration: 700.ms)
+                          .slideY(begin: 0.15, curve: Curves.easeOutCubic),
+
+                      const SizedBox(height: 28),
 
                       // Register link
                       Row(
@@ -274,7 +420,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             'Não tem conta? ',
-                            style: TextStyle(color: AppColors.textSecondary),
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                            ),
                           ),
                           GestureDetector(
                             onTap: widget.onRegisterTap,
@@ -282,16 +431,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               'Criar conta',
                               style: TextStyle(
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 600.ms, duration: 600.ms),
+
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
