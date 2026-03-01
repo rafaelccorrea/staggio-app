@@ -16,6 +16,10 @@ import '../../settings/screens/settings_screen.dart';
 import '../../help/screens/help_screen.dart';
 import '../../about/screens/about_screen.dart';
 import '../widgets/app_drawer.dart';
+import '../../ai/screens/ai_terrain_screen.dart';
+import '../../ai/screens/ai_photo_enhance_screen.dart';
+import '../../../core/services/plan_gating.dart';
+import '../../../core/services/auth_gate.dart';
 
 class AppShell extends StatefulWidget {
   final UserModel user;
@@ -128,7 +132,7 @@ class _AppShellState extends State<AppShell> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).cardColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.06),
@@ -160,7 +164,11 @@ class _AppShellState extends State<AppShell> {
     final isSelected = _currentIndex == index;
 
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () {
+        // Tabs 1 (Imóveis), 2 (Chat IA), 3 (Perfil) require login
+        if (index > 0 && !AuthGate.check(context, widget.user)) return;
+        setState(() => _currentIndex = index);
+      },
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: 64,
@@ -230,13 +238,14 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _showAiToolsSheet(BuildContext context) {
+    if (!AuthGate.check(context, widget.user)) return;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
@@ -280,13 +289,14 @@ class _AppShellState extends State<AppShell> {
               gradient: AppColors.terrainGradient,
               onTap: () {
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Visão de Terreno chegando em breve!'),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                if (!PlanGating.hasAccess(widget.user, 'terrain_vision')) {
+                  PlanGating.showUpgradeDialog(context, 'Visão de Terreno');
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AiTerrainScreen(apiClient: widget.apiClient),
                   ),
                 );
               },
@@ -315,13 +325,14 @@ class _AppShellState extends State<AppShell> {
               gradient: AppColors.cardGradient,
               onTap: () {
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Melhorar Foto chegando em breve!'),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                if (!PlanGating.hasAccess(widget.user, 'photo_enhance')) {
+                  PlanGating.showUpgradeDialog(context, 'Melhorar Foto');
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AiPhotoEnhanceScreen(apiClient: widget.apiClient),
                   ),
                 );
               },

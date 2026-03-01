@@ -156,7 +156,7 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
                     onSelected: (_) => setState(() => _propertyType = type),
                     selectedColor: AppColors.primary.withValues(alpha: 0.15),
                     labelStyle: TextStyle(
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      color: isSelected ? AppColors.primary : Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   );

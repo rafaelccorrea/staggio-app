@@ -10,9 +10,9 @@ import 'core/network/api_client.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
-import 'features/auth/screens/login_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/shell/screens/app_shell.dart';
+import 'data/models/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -118,13 +118,24 @@ class _AppRootState extends State<_AppRoot> {
         if (!_initialCheckDone || !_splashMinTimePassed || state is AuthInitial) {
           return const _SplashScreen();
         }
+        // Show onboarding only on first launch
+        if (!widget.onboardingDone) {
+          return OnboardingScreen(
+            onComplete: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('onboarding_done', true);
+              if (context.mounted) {
+                // After onboarding, go to app shell as guest
+                Navigator.of(context).pushReplacementNamed('/');
+              }
+            },
+          );
+        }
         if (state is AuthAuthenticated) {
           return AppShell(user: state.user, apiClient: widget.apiClient);
         }
-        return _AuthFlow(
-          apiClient: widget.apiClient,
-          onboardingDone: widget.onboardingDone,
-        );
+        // Lazy login: show app as guest, login prompted on action
+        return AppShell(user: UserModel.guest(), apiClient: widget.apiClient);
       },
     );
   }
@@ -242,57 +253,13 @@ class _SplashScreenState extends State<_SplashScreen>
                       height: 120,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  FadeTransition(
-                    opacity: Tween<double>(begin: 0.5, end: 1.0).animate(
-                      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
-                    ),
-                    child: const Text(
-                      'Staggio',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AuthFlow extends StatelessWidget {
-  final ApiClient apiClient;
-  final bool onboardingDone;
-
-  const _AuthFlow({
-    required this.apiClient,
-    required this.onboardingDone,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (onboardingDone) {
-      return LoginScreen(
-        onRegisterTap: () {
-          // Navigate to register
-        },
-      );
-    }
-    return OnboardingScreen(
-      onComplete: () async {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('onboarding_done', true);
-        if (context.mounted) {
-          Navigator.of(context).pushReplacementNamed('/login');
-        }
-      },
     );
   }
 }

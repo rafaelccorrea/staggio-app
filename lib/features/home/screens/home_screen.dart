@@ -7,10 +7,14 @@ import '../../../data/models/user_model.dart';
 import '../widgets/ai_tool_card.dart';
 import '../widgets/credits_card.dart';
 import '../widgets/quick_stats_card.dart';
+import '../widgets/showcase_section.dart';
 import '../../ai/screens/ai_staging_screen.dart';
 import '../../ai/screens/ai_description_screen.dart';
 import '../../ai/screens/ai_chat_screen.dart';
+import '../../ai/screens/ai_terrain_screen.dart';
+import '../../ai/screens/ai_photo_enhance_screen.dart';
 import '../../ai/screens/generations_history_screen.dart';
+import '../../../core/services/plan_gating.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -309,11 +313,14 @@ class HomeScreen extends StatelessWidget {
                     icon: Iconsax.building_4,
                     gradient: AppColors.terrainGradient,
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('🚀 Visão de Terreno chegando em breve!'),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      if (!PlanGating.hasAccess(user, 'terrain_vision')) {
+                        PlanGating.showUpgradeDialog(context, 'Visão de Terreno');
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AiTerrainScreen(apiClient: _apiClient),
                         ),
                       );
                     },
@@ -338,16 +345,29 @@ class HomeScreen extends StatelessWidget {
                     icon: Iconsax.camera,
                     gradient: AppColors.cardGradient,
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('📸 Melhorar Foto chegando em breve!'),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      if (!PlanGating.hasAccess(user, 'photo_enhance')) {
+                        PlanGating.showUpgradeDialog(context, 'Melhorar Foto');
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AiPhotoEnhanceScreen(apiClient: _apiClient),
                         ),
                       );
                     },
                   ).animate().fadeIn(delay: 800.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
                 ]),
+              ),
+            ),
+
+            // Showcase Section - Before/After Examples
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: const ShowcaseSection()
+                    .animate()
+                    .fadeIn(delay: 850.ms, duration: 600.ms),
               ),
             ),
 

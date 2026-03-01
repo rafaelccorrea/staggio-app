@@ -27,6 +27,22 @@ class UserModel extends Equatable {
     this.bonusCredits = 0,
   });
 
+  /// Creates a guest user for browsing without login
+  factory UserModel.guest() {
+    return const UserModel(
+      id: 'guest',
+      name: 'Visitante',
+      email: '',
+      role: 'guest',
+      plan: 'free',
+      aiCreditsUsed: 0,
+      aiCreditsLimit: 0,
+      bonusCredits: 0,
+    );
+  }
+
+  bool get isGuest => id == 'guest';
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] ?? '',

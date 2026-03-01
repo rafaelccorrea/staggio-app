@@ -179,7 +179,7 @@ class FeaturesScreen extends StatelessWidget {
   }
 
   Widget _buildCreditsInfo() {
-    final totalCredits = user.aiCreditsLimit + (user.bonusCredits ?? 0);
+    final totalCredits = user.aiCreditsLimit + user.bonusCredits;
     final usedCredits = user.aiCreditsUsed;
     final availableCredits = totalCredits - usedCredits;
 
@@ -201,7 +201,7 @@ class FeaturesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildCreditRow('Créditos mensais', user.aiCreditsLimit.toString()),
-          _buildCreditRow('Créditos bônus', (user.bonusCredits ?? 0).toString()),
+          _buildCreditRow('Créditos bônus', user.bonusCredits.toString()),
           _buildCreditRow('Créditos usados', usedCredits.toString()),
           const Divider(height: 16),
           _buildCreditRow(

@@ -7,6 +7,7 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import 'forgot_password_screen.dart';
+import '../../../core/services/biometric_service.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onRegisterTap;
@@ -23,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _biometricAvailable = false;
   late AnimationController _glowController;
 
   @override
@@ -32,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
       duration: const Duration(milliseconds: 3000),
     )..repeat(reverse: true);
+    _checkBiometric();
   }
 
   @override
@@ -40,6 +43,24 @@ class _LoginScreenState extends State<LoginScreen>
     _passwordController.dispose();
     _glowController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkBiometric() async {
+    final available = await BiometricService.isAvailable();
+    final enabled = await BiometricService.isEnabled();
+    if (mounted) {
+      setState(() => _biometricAvailable = available && enabled);
+    }
+  }
+
+  Future<void> _onBiometricLogin() async {
+    final credentials = await BiometricService.authenticate();
+    if (credentials != null && mounted) {
+      context.read<AuthBloc>().add(AuthLoginRequested(
+        email: credentials['email']!,
+        password: credentials['password']!,
+      ));
+    }
   }
 
   void _onLogin() {
@@ -72,6 +93,14 @@ class _LoginScreenState extends State<LoginScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
+            );
+          }
+          if (state is AuthAuthenticated) {
+            // Show biometric prompt after successful login
+            BiometricService.showEnablePrompt(
+              context,
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
             );
           }
         },
@@ -586,6 +615,36 @@ class _LoginScreenState extends State<LoginScreen>
                                       ),
                                     ),
                                   ),
+
+                                  // Biometric login button
+                                  if (_biometricAvailable) ...[
+                                    const SizedBox(height: 12),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 52,
+                                      child: OutlinedButton.icon(
+                                        onPressed: _onBiometricLogin,
+                                        icon: const Icon(Icons.fingerprint, size: 22),
+                                        label: const Text(
+                                          'Entrar com Biometria',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(vertical: 14),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(14),
+                                          ),
+                                          side: BorderSide(
+                                            color: const Color(0xFF1E88E5).withValues(alpha: 0.4),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),

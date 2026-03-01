@@ -405,7 +405,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.primary.withValues(alpha: 0.7)),
         filled: true,
-        fillColor: enabled ? Colors.white : const Color(0xFFF0F0F0),
+        fillColor: enabled ? Theme.of(context).cardColor : Theme.of(context).dividerColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,

@@ -160,7 +160,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Text(
           message.text,
           style: TextStyle(
-            color: message.isUser ? Colors.white : AppColors.textPrimary,
+            color: message.isUser ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
             fontSize: 15,
             height: 1.5,
           ),
