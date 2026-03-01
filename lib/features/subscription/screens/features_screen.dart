@@ -302,7 +302,6 @@ class FeaturesScreen extends StatelessWidget {
 
   List<_Feature> _getLimitsFeatures() {
     final isPro = user.aiCreditsLimit >= 50;
-    final isAgency = user.aiCreditsLimit >= 200;
 
     return [
       _Feature(

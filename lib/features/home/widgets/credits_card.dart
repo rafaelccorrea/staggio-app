@@ -59,10 +59,12 @@ class CreditsCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      '${user.aiCreditsUsed} de ${user.aiCreditsLimit} usados',
+                      user.isGuest
+                          ? '0 de 5 créditos grátis disponíveis'
+                          : '${user.aiCreditsUsed} de ${user.aiCreditsLimit} usados',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    if (user.bonusCredits > 0)
+                    if (!user.isGuest && user.bonusCredits > 0)
                       Text(
                         '+${user.bonusCredits} créditos bônus',
                         style: TextStyle(
@@ -71,10 +73,19 @@ class CreditsCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                    if (user.isGuest)
+                      Text(
+                        'Crie uma conta para usar',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                   ],
                 ),
               ),
-              if (user.plan == 'free')
+              if (user.isGuest || user.plan == 'free')
                 TextButton(
                   onPressed: () {
                     Navigator.push(

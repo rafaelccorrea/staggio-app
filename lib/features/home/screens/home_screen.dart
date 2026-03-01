@@ -176,6 +176,16 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
+            // Showcase Section - Before/After Examples (MOVED TO TOP)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: const ShowcaseSection()
+                    .animate()
+                    .fadeIn(delay: 350.ms, duration: 600.ms),
+              ),
+            ),
+
             // AI Assistant Banner
             SliverToBoxAdapter(
               child: Padding(
@@ -361,15 +371,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Showcase Section - Before/After Examples
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: const ShowcaseSection()
-                    .animate()
-                    .fadeIn(delay: 850.ms, duration: 600.ms),
-              ),
-            ),
+
 
             // Quick Stats
             SliverToBoxAdapter(
