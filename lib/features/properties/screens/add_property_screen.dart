@@ -201,6 +201,39 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
     try {
       for (final photo in _selectedPhotos) {
+        // Validate image before upload
+        try {
+          final isValid = await widget.apiClient.post(
+            ApiConstants.validatePropertyImage,
+            data: {'imageUrl': photo.path},
+          );
+          
+          final body = isValid.data;
+          bool imageIsValid = false;
+          if (body is Map) {
+            imageIsValid = body['isValid'] ?? false;
+          }
+          
+          if (!imageIsValid) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Esta imagem não parece ser de um imóvel. Por favor, selecione uma foto de propriedade, terreno ou planta.'),
+                  backgroundColor: AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+            continue;
+          }
+        } catch (e) {
+          debugPrint('Image validation error: $e');
+          // Continue with upload even if validation fails
+        }
+        
+
         final response = await widget.apiClient.uploadFile(
           ApiConstants.upload,
           photo.path,

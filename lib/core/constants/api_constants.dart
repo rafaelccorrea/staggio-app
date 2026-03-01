@@ -42,6 +42,7 @@ class ApiConstants {
   static const String stripeWebhook = '/stripe/webhook';
 
   // Storage
+  static const String validatePropertyImage = '/ai/validate-property-image';
   static const String upload = '/storage/upload';
   static const String uploadMultiple = '/storage/upload-multiple';
 
