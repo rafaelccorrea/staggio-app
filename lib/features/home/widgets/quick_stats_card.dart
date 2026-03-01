@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
 
 class QuickStatsCard extends StatelessWidget {
   final String title;
@@ -20,7 +19,7 @@ class QuickStatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Theme.of(context).dividerColor,
@@ -44,7 +43,7 @@ class QuickStatsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
           SizedBox(height: 2),
@@ -52,7 +51,7 @@ class QuickStatsCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 12,
-              color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
         ],
