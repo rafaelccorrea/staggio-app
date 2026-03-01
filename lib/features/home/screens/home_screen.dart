@@ -331,6 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: 'Decore ambientes',
                     icon: Iconsax.brush_1,
                     gradient: AppColors.stagingGradient,
+                    featureKey: 'staging',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -345,6 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: 'Visualize construções',
                     icon: Iconsax.building_4,
                     gradient: AppColors.terrainGradient,
+                    featureKey: 'terrain_vision',
                     onTap: () {
                       if (!PlanGating.hasAccess(widget.user, 'terrain_vision')) {
                         PlanGating.showUpgradeDialog(context, 'Visão de Terreno');
@@ -363,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: 'Textos profissionais',
                     icon: Iconsax.document_text,
                     gradient: AppColors.primaryGradient,
+                    featureKey: 'description',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -377,6 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: 'Fotos profissionais',
                     icon: Iconsax.camera,
                     gradient: AppColors.cardGradient,
+                    featureKey: 'photo_enhance',
                     onTap: () {
                       if (!PlanGating.hasAccess(widget.user, 'photo_enhance')) {
                         PlanGating.showUpgradeDialog(context, 'Melhorar Foto');
@@ -399,6 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
+                    featureKey: 'video_generation',
                     onTap: () {
                       if (!PlanGating.hasAccess(widget.user, 'video_generation')) {
                         PlanGating.showUpgradeDialog(context, 'Vídeo Cinematográfico');
