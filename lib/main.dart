@@ -105,9 +105,12 @@ class _AppRootState extends State<_AppRoot> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listenWhen: (previous, current) =>
-          current is AuthAuthenticated || current is AuthUnauthenticated,
+          current is AuthAuthenticated || current is AuthUnauthenticated || current is AuthError,
       listener: (context, state) {
-        setState(() => _initialCheckDone = true);
+        // Mark initial check as done when we get any final state
+        if (state is AuthAuthenticated || state is AuthUnauthenticated || state is AuthError) {
+          setState(() => _initialCheckDone = true);
+        }
       },
       buildWhen: (previous, current) => true,
       builder: (context, state) {
