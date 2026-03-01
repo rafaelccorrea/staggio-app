@@ -12,6 +12,8 @@ import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/shell/screens/app_shell.dart';
+import 'features/auth/screens/login_screen.dart';
+import 'features/auth/screens/register_screen.dart';
 import 'data/models/user_model.dart';
 
 /// Global navigator key to allow clearing the navigation stack from anywhere
@@ -158,11 +160,20 @@ class _AppRootState extends State<_AppRoot> {
             );
           }
 
-          // Guest / unauthenticated / error - show app as guest
-          return AppShell(
-            key: const ValueKey('guest'),
-            user: UserModel.guest(),
-            apiClient: widget.apiClient,
+          // Unauthenticated - show login screen (NOT the app)
+          return LoginScreen(
+            key: const ValueKey('login'),
+            onRegisterTap: () {
+              navigatorKey.currentState?.push(
+                MaterialPageRoute(
+                  builder: (_) => RegisterScreen(
+                    onLoginTap: () {
+                      navigatorKey.currentState?.pop();
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
