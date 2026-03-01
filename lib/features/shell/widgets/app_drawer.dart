@@ -252,37 +252,38 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // Logout
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: ListTile(
-                onTap: onLogout,
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+            // Logout - Only show for authenticated users
+            if (!isGuest)
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: ListTile(
+                  onTap: onLogout,
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Iconsax.logout,
+                      color: AppColors.error,
+                      size: 20,
+                    ),
                   ),
-                  child: const Icon(
-                    Iconsax.logout,
-                    color: AppColors.error,
-                    size: 20,
+                  title: const Text(
+                    'Sair da Conta',
+                    style: TextStyle(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                title: const Text(
-                  'Sair da Conta',
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
-            ),
           ],
         ),
       ),
