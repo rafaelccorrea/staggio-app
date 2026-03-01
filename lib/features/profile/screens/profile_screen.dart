@@ -14,6 +14,7 @@ import '../../help/screens/help_screen.dart';
 import '../../about/screens/about_screen.dart';
 import 'edit_profile_screen.dart';
 import '../../subscription/screens/buy_credits_screen.dart';
+import '../../subscription/screens/features_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -182,6 +183,19 @@ class ProfileScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const PlansScreen()),
+                      );
+                    },
+                  ),
+                  Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                  _buildMenuItem(
+                    context,
+                    icon: Iconsax.info_circle,
+                    title: 'Recursos do Plano',
+                    subtitle: 'Veja o que você pode fazer',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => FeaturesScreen(user: user)),
                       );
                     },
                   ),
