@@ -6,7 +6,6 @@ import '../../../core/network/api_client.dart';
 import '../../../data/models/user_model.dart';
 import '../widgets/ai_tool_card.dart';
 import '../widgets/credits_card.dart';
-import '../widgets/quick_stats_card.dart';
 import '../widgets/showcase_section.dart';
 import '../../ai/screens/ai_staging_screen.dart';
 import '../../ai/screens/ai_description_screen.dart';
@@ -368,59 +367,6 @@ class HomeScreen extends StatelessWidget {
                     },
                   ).animate().fadeIn(delay: 800.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
                 ]),
-              ),
-            ),
-
-
-
-            // Quick Stats
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-                child: Text(
-                  'Resumo',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
-                  ),
-                ).animate().fadeIn(delay: 900.ms),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: QuickStatsCard(
-                        title: 'Imóveis',
-                        value: '${user.totalProperties}',
-                        icon: Iconsax.home_2,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: QuickStatsCard(
-                        title: 'Gerações',
-                        value: '${user.totalGenerations}',
-                        icon: Iconsax.magic_star,
-                        color: AppColors.secondary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: QuickStatsCard(
-                        title: 'Créditos',
-                        value: '${user.aiCreditsRemaining}',
-                        icon: Iconsax.star_1,
-                        color: AppColors.success,
-                      ),
-                    ),
-                  ],
-                ).animate().fadeIn(delay: 1000.ms, duration: 500.ms).slideY(begin: 0.2),
               ),
             ),
           ],
