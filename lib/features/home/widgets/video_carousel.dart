@@ -152,7 +152,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
                             if (_showControls)
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.3),
+                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3 * 0.3) : Colors.black.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Center(

@@ -249,7 +249,7 @@ class _BeforeAfterCard extends StatelessWidget {
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.06 * 0.3) : Colors.black.withValues(alpha: 0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -285,7 +285,7 @@ class _BeforeAfterCard extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.6),
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.6 * 0.3) : Colors.black.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(

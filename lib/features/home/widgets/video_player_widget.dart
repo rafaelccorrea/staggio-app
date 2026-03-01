@@ -112,7 +112,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   // Play/Pause overlay
                   if (!_isPlaying)
                     Container(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3 * 0.3) : Colors.black.withValues(alpha: 0.3),
                       child: Center(
                         child: Container(
                           width: 60,
