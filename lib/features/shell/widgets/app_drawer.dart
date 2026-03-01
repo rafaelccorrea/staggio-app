@@ -7,6 +7,7 @@ class AppDrawer extends StatelessWidget {
   final String userEmail;
   final String userPlan;
   final int aiCredits;
+  final bool isGuest;
   final VoidCallback onHomeTap;
   final VoidCallback onPropertiesTap;
   final VoidCallback onStagingTap;
@@ -26,6 +27,7 @@ class AppDrawer extends StatelessWidget {
     required this.userEmail,
     required this.userPlan,
     required this.aiCredits,
+    required this.isGuest,
     required this.onHomeTap,
     required this.onPropertiesTap,
     required this.onStagingTap,
@@ -175,36 +177,41 @@ class AppDrawer extends StatelessWidget {
                     label: 'Início',
                     onTap: onHomeTap,
                   ),
-                  _buildMenuItem(context, icon: Iconsax.building_4,
-                    label: 'Meus Imóveis',
-                    onTap: onPropertiesTap,
-                  ),
+                  if (!isGuest)
+                    _buildMenuItem(context, icon: Iconsax.building_4,
+                      label: 'Meus Imóveis',
+                      onTap: onPropertiesTap,
+                    ),
 
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Divider(height: 24),
-                  ),
+                  if (!isGuest)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(height: 24),
+                    ),
 
-                  _buildSectionTitle(context, 'Ferramentas IA'),
-                  _buildMenuItem(context, icon: Iconsax.brush_1,
-                    label: 'Home Staging',
-                    onTap: onStagingTap,
-                    badge: 'IA',
-                  ),
-                  _buildMenuItem(context, icon: Iconsax.document_text,
-                    label: 'Descrição Automática',
-                    onTap: onDescriptionTap,
-                    badge: 'IA',
-                  ),
-                  _buildMenuItem(context, icon: Iconsax.message_text,
-                    label: 'Assistente IA',
-                    onTap: onChatTap,
-                    badge: 'IA',
-                  ),
-                  _buildMenuItem(context, icon: Iconsax.clock,
-                    label: 'Histórico de Gerações',
-                    onTap: onHistoryTap,
-                  ),
+                  if (!isGuest) ...
+                    [
+                      _buildSectionTitle(context, 'Ferramentas IA'),
+                      _buildMenuItem(context, icon: Iconsax.brush_1,
+                        label: 'Home Staging',
+                        onTap: onStagingTap,
+                        badge: 'IA',
+                      ),
+                      _buildMenuItem(context, icon: Iconsax.document_text,
+                        label: 'Descrição Automática',
+                        onTap: onDescriptionTap,
+                        badge: 'IA',
+                      ),
+                      _buildMenuItem(context, icon: Iconsax.message_text,
+                        label: 'Assistente IA',
+                        onTap: onChatTap,
+                        badge: 'IA',
+                      ),
+                      _buildMenuItem(context, icon: Iconsax.clock,
+                        label: 'Histórico de Gerações',
+                        onTap: onHistoryTap,
+                      ),
+                    ],
 
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
@@ -216,14 +223,16 @@ class AppDrawer extends StatelessWidget {
                     label: 'Planos e Assinatura',
                     onTap: onPlansTap,
                   ),
-                  _buildMenuItem(context, icon: Iconsax.user,
-                    label: 'Meu Perfil',
-                    onTap: onProfileTap,
-                  ),
-                  _buildMenuItem(context, icon: Iconsax.setting_2,
-                    label: 'Configurações',
-                    onTap: onSettingsTap,
-                  ),
+                  if (!isGuest)
+                    _buildMenuItem(context, icon: Iconsax.user,
+                      label: 'Meu Perfil',
+                      onTap: onProfileTap,
+                    ),
+                  if (!isGuest)
+                    _buildMenuItem(context, icon: Iconsax.setting_2,
+                      label: 'Configurações',
+                      onTap: onSettingsTap,
+                    ),
 
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),

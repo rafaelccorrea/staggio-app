@@ -101,6 +101,7 @@ class _AppShellState extends State<AppShell> {
         userEmail: widget.user.email,
         userPlan: widget.user.planDisplayName,
         aiCredits: widget.user.aiCreditsRemaining,
+        isGuest: widget.user.isGuest,
         onHomeTap: () => _switchTab(0),
         onPropertiesTap: () => _switchTab(1),
         onStagingTap: () => _navigateToScreen(

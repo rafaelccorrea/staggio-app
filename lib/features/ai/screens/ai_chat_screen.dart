@@ -80,6 +80,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           children: [

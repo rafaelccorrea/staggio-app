@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import 'video_player_widget.dart';
 
 class ShowcaseSection extends StatelessWidget {
   const ShowcaseSection({super.key});
@@ -183,6 +184,29 @@ class ShowcaseSection extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Video Players
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              VideoPlayerWidget(
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
+                title: 'Tour Virtual - Apartamento Luxo',
+              ),
+              VideoPlayerWidget(
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
+                title: 'Apresentação - Casa Moderna',
+              ),
+              VideoPlayerWidget(
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerBlazes.mp4',
+                title: 'Redes Sociais - Imóvel Premium',
+              ),
+            ],
           ),
         ),
 
