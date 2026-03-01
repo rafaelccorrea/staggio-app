@@ -93,10 +93,12 @@ class _AppRoot extends StatefulWidget {
 class _AppRootState extends State<_AppRoot> {
   bool _splashMinTimePassed = false;
   bool _initialCheckDone = false;
+  late bool _onboardingDone;
 
   @override
   void initState() {
     super.initState();
+    _onboardingDone = widget.onboardingDone;
     // Minimum splash screen duration of 2 seconds
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (mounted) {
@@ -135,13 +137,13 @@ class _AppRootState extends State<_AppRoot> {
           }
 
           // Show onboarding only on first launch
-          if (!widget.onboardingDone) {
+          if (!_onboardingDone) {
             return OnboardingScreen(
               onComplete: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setBool('onboarding_done', true);
-                if (context.mounted) {
-                  (context as Element).markNeedsBuild();
+                if (mounted) {
+                  setState(() => _onboardingDone = true);
                 }
               },
             );
