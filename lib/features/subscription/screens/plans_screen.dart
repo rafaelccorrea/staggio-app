@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/constants/api_constants.dart';
 
 class PlansScreen extends StatefulWidget {
   const PlansScreen({super.key});
@@ -62,86 +65,143 @@ class _PlansScreenState extends State<PlansScreen> {
     ),
   ];
 
-  void _handleSubscribe() {
+  bool _isSubscribing = false;
+
+  Future<void> _handleSubscribe() async {
     final plan = _plans[_selectedPlan];
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: plan.color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(Iconsax.crown_1, size: 32, color: plan.color),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Assinar ${plan.name}',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${plan.price}${plan.period}',
-              style: TextStyle(fontSize: 18, color: plan.color, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Você será redirecionado para o checkout seguro do Stripe para finalizar sua assinatura.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Redirecionando para checkout do plano ${plan.name}...'),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      backgroundColor: plan.color,
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: plan.color,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Confirmar Assinatura',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceVariant,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: plan.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(Iconsax.crown_1, size: 32, color: plan.color),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Assinar ${plan.name}',
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${plan.price}${plan.period}',
+                style: TextStyle(fontSize: 18, color: plan.color, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Você será redirecionado para o checkout seguro do Stripe para finalizar sua assinatura.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: _isSubscribing
+                      ? null
+                      : () async {
+                          setSheetState(() => _isSubscribing = true);
+                          try {
+                            final apiClient = ApiClient();
+                            final planKey = _selectedPlan == 0
+                                ? 'starter'
+                                : _selectedPlan == 1
+                                    ? 'pro'
+                                    : 'agency';
+                            final response = await apiClient.post(
+                              ApiConstants.stripeCheckout,
+                              data: {'plan': planKey},
+                            );
+                            final body = response.data;
+                            String? checkoutUrl;
+                            if (body is Map) {
+                              checkoutUrl = body['data']?['url'] ?? body['url'];
+                            }
+                            if (checkoutUrl != null) {
+                              Navigator.pop(ctx);
+                              final uri = Uri.parse(checkoutUrl);
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
+                            } else {
+                              Navigator.pop(ctx);
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Erro ao iniciar checkout. Tente novamente.'),
+                                    backgroundColor: AppColors.error,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            Navigator.pop(ctx);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Erro: ${e.toString()}'),
+                                  backgroundColor: AppColors.error,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              );
+                            }
+                          } finally {
+                            _isSubscribing = false;
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: plan.color,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                  child: _isSubscribing
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'Confirmar Assinatura',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+              ),
+            ],
+          ),
         ),
       ),
     );

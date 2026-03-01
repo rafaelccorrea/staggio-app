@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,6 +18,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkMode = false;
   bool _biometricAuth = false;
   String _language = 'Português';
+  String _appVersion = '1.0.0';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
+        _darkMode = prefs.getBool('dark_mode') ?? false;
+        _biometricAuth = prefs.getBool('biometric_auth') ?? false;
+        _language = prefs.getString('language') ?? 'Português';
+      });
+    }
+  }
+
+  Future<void> _saveSetting(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      await prefs.setBool(key, value);
+    } else if (value is String) {
+      await prefs.setString(key, value);
+    }
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = '${info.version}+${info.buildNumber}';
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +81,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Notificações',
                 subtitle: 'Receber alertas e atualizações',
                 value: _notificationsEnabled,
-                onChanged: (v) => setState(() => _notificationsEnabled = v),
+                onChanged: (v) {
+                  setState(() => _notificationsEnabled = v);
+                  _saveSetting('notifications_enabled', v);
+                },
               ),
               _buildSwitchTile(
                 icon: Iconsax.moon,
@@ -47,10 +93,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: _darkMode,
                 onChanged: (v) {
                   setState(() => _darkMode = v);
+                  _saveSetting('dark_mode', v);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Modo escuro em breve!'),
+                      content: Text(v ? 'Modo escuro ativado' : 'Modo claro ativado'),
                       behavior: SnackBarBehavior.floating,
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -63,7 +111,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Autenticação Biométrica',
                 subtitle: 'Login com digital ou Face ID',
                 value: _biometricAuth,
-                onChanged: (v) => setState(() => _biometricAuth = v),
+                onChanged: (v) {
+                  setState(() => _biometricAuth = v);
+                  _saveSetting('biometric_auth', v);
+                },
               ),
             ],
           ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
@@ -83,17 +134,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Iconsax.trash,
                 title: 'Limpar Cache',
                 subtitle: 'Liberar espaço de armazenamento',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Cache limpo com sucesso!'),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: AppColors.success,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  // Keep settings but clear cached data
+                  final notifications = prefs.getBool('notifications_enabled');
+                  final darkMode = prefs.getBool('dark_mode');
+                  final biometric = prefs.getBool('biometric_auth');
+                  final language = prefs.getString('language');
+                  await prefs.clear();
+                  // Restore settings
+                  if (notifications != null) await prefs.setBool('notifications_enabled', notifications);
+                  if (darkMode != null) await prefs.setBool('dark_mode', darkMode);
+                  if (biometric != null) await prefs.setBool('biometric_auth', biometric);
+                  if (language != null) await prefs.setString('language', language);
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Cache limpo com sucesso!'),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: AppColors.success,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
               ),
             ],
@@ -108,32 +174,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Iconsax.shield_tick,
                 title: 'Privacidade',
                 subtitle: 'Política de privacidade',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Abrindo política de privacidade...'),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
+                onTap: () async {
+                  final uri = Uri.parse('https://staggio.app/privacidade');
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
                 },
               ),
               _buildTapTile(
                 icon: Iconsax.document,
                 title: 'Termos de Uso',
                 subtitle: 'Termos e condições',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Abrindo termos de uso...'),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
+                onTap: () async {
+                  final uri = Uri.parse('https://staggio.app/termos');
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
                 },
               ),
               _buildTapTile(
@@ -150,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Center(
             child: Text(
-              'Staggio v1.0.0',
+              'Staggio v$_appVersion',
               style: TextStyle(
                 color: AppColors.textTertiary,
                 fontSize: 13,
@@ -277,6 +333,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               groupValue: _language,
               onChanged: (v) {
                 setState(() => _language = v!);
+                _saveSetting('language', v!);
                 Navigator.pop(ctx);
               },
               title: Text(lang),

@@ -167,7 +167,7 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                        MaterialPageRoute(builder: (_) => EditProfileScreen(user: user)),
                       );
                     },
                   ),

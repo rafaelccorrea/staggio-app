@@ -49,13 +49,26 @@ class ApiClient {
     return _dio.put(path, data: data);
   }
 
+  Future<Response> patch(String path, {dynamic data}) {
+    return _dio.patch(path, data: data);
+  }
+
   Future<Response> delete(String path) {
     return _dio.delete(path);
   }
 
-  Future<Response> uploadFile(String path, String filePath) {
+  Future<Response> uploadFile(String path, String filePath, {String? folder}) {
     final formData = FormData.fromMap({
       'file': MultipartFile.fromFileSync(filePath),
+      if (folder != null) 'folder': folder,
+    });
+    return _dio.post(path, data: formData);
+  }
+
+  Future<Response> uploadMultipleFiles(String path, List<String> filePaths, {String? folder}) {
+    final formData = FormData.fromMap({
+      'files': filePaths.map((p) => MultipartFile.fromFileSync(p)).toList(),
+      if (folder != null) 'folder': folder,
     });
     return _dio.post(path, data: formData);
   }

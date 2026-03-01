@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/app_theme.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  String _appVersion = '1.0.0';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() => _appVersion = '${info.version}+${info.buildNumber}');
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +87,7 @@ class AboutScreen extends StatelessWidget {
 
           Center(
             child: Text(
-              'Versão 1.0.0',
+              'Versão $_appVersion',
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textTertiary,
@@ -179,7 +203,12 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  onTap: () {},
+                  onTap: () async {
+                    final uri = Uri.parse('https://staggio.app/privacidade');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  },
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.shield_tick, color: AppColors.primary),
                   title: const Text('Política de Privacidade', style: TextStyle(fontSize: 15)),
@@ -187,7 +216,12 @@ class AboutScreen extends StatelessWidget {
                 ),
                 Divider(height: 1, indent: 64, color: AppColors.surfaceVariant),
                 ListTile(
-                  onTap: () {},
+                  onTap: () async {
+                    final uri = Uri.parse('https://staggio.app/termos');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  },
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.document, color: AppColors.primary),
                   title: const Text('Termos de Uso', style: TextStyle(fontSize: 15)),
@@ -195,7 +229,13 @@ class AboutScreen extends StatelessWidget {
                 ),
                 Divider(height: 1, indent: 64, color: AppColors.surfaceVariant),
                 ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    showLicensePage(
+                      context: context,
+                      applicationName: 'Staggio',
+                      applicationVersion: _appVersion,
+                    );
+                  },
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   leading: Icon(Iconsax.code, color: AppColors.primary),
                   title: const Text('Licenças Open Source', style: TextStyle(fontSize: 15)),

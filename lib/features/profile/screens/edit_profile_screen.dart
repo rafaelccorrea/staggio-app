@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/constants/api_constants.dart';
+import '../../../data/models/user_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final UserModel? user;
+  final ApiClient? apiClient;
+
+  const EditProfileScreen({super.key, this.user, this.apiClient});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -12,12 +19,164 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'João Silva');
-  final _emailController = TextEditingController(text: 'teste@staggio.app');
-  final _phoneController = TextEditingController(text: '(11) 99999-9999');
-  final _creciController = TextEditingController(text: 'CRECI-SP 123456');
-  final _bioController = TextEditingController(text: 'Corretor especializado em imóveis de alto padrão');
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _creciController;
+  late final ApiClient _apiClient;
   bool _isLoading = false;
+  bool _isLoadingProfile = true;
+  UserModel? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiClient = widget.apiClient ?? ApiClient();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _creciController = TextEditingController();
+
+    if (widget.user != null) {
+      _populateFields(widget.user!);
+      _isLoadingProfile = false;
+    } else {
+      _loadProfile();
+    }
+  }
+
+  void _populateFields(UserModel user) {
+    _currentUser = user;
+    _nameController.text = user.name;
+    _emailController.text = user.email;
+    _phoneController.text = user.phone ?? '';
+    _creciController.text = user.creci ?? '';
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final response = await _apiClient.get(ApiConstants.profile);
+      final body = response.data;
+      final data = body is Map && body.containsKey('data') ? body['data'] : body;
+      final user = UserModel.fromJson(data as Map<String, dynamic>);
+      if (mounted) {
+        setState(() {
+          _populateFields(user);
+          _isLoadingProfile = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingProfile = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao carregar perfil'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickAvatar() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      if (image == null || !mounted) return;
+      setState(() => _isLoading = true);
+      final response = await _apiClient.uploadFile(
+        ApiConstants.upload,
+        image.path,
+        folder: 'avatars',
+      );
+      final body = response.data;
+      String? url;
+      if (body is Map) {
+        url = body['data']?['url'] ?? body['url'] ?? body['data']?['publicUrl'] ?? body['publicUrl'];
+      }
+      if (url != null) {
+        await _apiClient.patch(ApiConstants.updateProfile, data: {'avatarUrl': url});
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Foto atualizada!'),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao atualizar foto'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final data = <String, dynamic>{};
+      if (_nameController.text.trim() != (_currentUser?.name ?? '')) {
+        data['name'] = _nameController.text.trim();
+      }
+      if (_phoneController.text.trim() != (_currentUser?.phone ?? '')) {
+        data['phone'] = _phoneController.text.trim();
+      }
+      if (_creciController.text.trim() != (_currentUser?.creci ?? '')) {
+        data['creci'] = _creciController.text.trim();
+      }
+
+      if (data.isNotEmpty) {
+        await _apiClient.patch(ApiConstants.updateProfile, data: data);
+      }
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Perfil atualizado com sucesso!'),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao atualizar: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -25,32 +184,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _creciController.dispose();
-    _bioController.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Perfil atualizado com sucesso!'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
-      Navigator.pop(context);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingProfile) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF8F7FF),
+        appBar: AppBar(
+          title: const Text('Editar Perfil'),
+          leading: IconButton(
+            icon: const Icon(Iconsax.arrow_left),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F7FF),
       appBar: AppBar(
@@ -94,32 +246,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       gradient: AppColors.primaryGradient,
                       borderRadius: BorderRadius.circular(32),
                     ),
-                    child: const Center(
-                      child: Text(
-                        'J',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
+                    child: _currentUser?.avatarUrl != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(32),
+                            child: Image.network(
+                              _currentUser!.avatarUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Center(
+                                child: Text(
+                                  _currentUser?.name.isNotEmpty == true
+                                      ? _currentUser!.name[0].toUpperCase()
+                                      : 'S',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              _currentUser?.name.isNotEmpty == true
+                                  ? _currentUser!.name[0].toUpperCase()
+                                  : 'S',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 40,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
                     child: GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('Selecionar foto em breve!'),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        );
-                      },
+                      onTap: _pickAvatar,
                       child: Container(
                         width: 36,
                         height: 36,
@@ -153,6 +317,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label: 'Email',
               icon: Iconsax.sms,
               keyboardType: TextInputType.emailAddress,
+              enabled: false,
               validator: (v) {
                 if (v == null || v.isEmpty) return 'Informe o email';
                 if (!v.contains('@')) return 'Email inválido';
@@ -176,15 +341,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label: 'CRECI',
               icon: Iconsax.card,
             ).animate().fadeIn(delay: 500.ms, duration: 500.ms),
-
-            const SizedBox(height: 16),
-
-            _buildField(
-              controller: _bioController,
-              label: 'Bio',
-              icon: Iconsax.edit_2,
-              maxLines: 3,
-            ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
 
             const SizedBox(height: 32),
 
@@ -218,7 +374,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
               ),
-            ).animate().fadeIn(delay: 700.ms, duration: 500.ms),
+            ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
 
             const SizedBox(height: 32),
           ],
@@ -234,17 +390,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
     int maxLines = 1,
+    bool enabled = true,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
-      style: const TextStyle(fontSize: 15),
+      enabled: enabled,
+      style: TextStyle(
+        fontSize: 15,
+        color: enabled ? AppColors.textPrimary : AppColors.textTertiary,
+      ),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.primary.withValues(alpha: 0.7)),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: enabled ? Colors.white : const Color(0xFFF0F0F0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -257,6 +418,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.surfaceVariant),
+        ),
+        suffixIcon: !enabled
+            ? Icon(Iconsax.lock, size: 18, color: AppColors.textTertiary)
+            : null,
       ),
       validator: validator,
     );

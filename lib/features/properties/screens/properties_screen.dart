@@ -3,16 +3,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../../data/models/property_model.dart';
 import 'add_property_screen.dart';
 
 class PropertiesScreen extends StatefulWidget {
-  final List<PropertyModel> properties;
   final ApiClient? apiClient;
 
   const PropertiesScreen({
     super.key,
-    this.properties = const [],
     this.apiClient,
   });
 
@@ -21,11 +20,14 @@ class PropertiesScreen extends StatefulWidget {
 }
 
 class _PropertiesScreenState extends State<PropertiesScreen> {
-  late List<PropertyModel> _allProperties;
+  late final ApiClient _apiClient;
+  List<PropertyModel> _allProperties = [];
   List<PropertyModel> _filteredProperties = [];
   String _selectedFilter = 'Todos';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  String? _errorMessage;
 
   final List<String> _filters = [
     'Todos',
@@ -46,14 +48,60 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
   @override
   void initState() {
     super.initState();
-    _allProperties = List.from(widget.properties);
-    _applyFilters();
+    _apiClient = widget.apiClient ?? ApiClient();
+    _loadProperties();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadProperties() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final response = await _apiClient.get(ApiConstants.properties);
+      final body = response.data;
+      List<dynamic> items;
+
+      if (body is Map && body.containsKey('data')) {
+        final data = body['data'];
+        if (data is Map && data.containsKey('items')) {
+          items = data['items'] as List;
+        } else if (data is List) {
+          items = data;
+        } else {
+          items = [];
+        }
+      } else if (body is List) {
+        items = body;
+      } else {
+        items = [];
+      }
+
+      if (mounted) {
+        setState(() {
+          _allProperties = items
+              .map((json) => PropertyModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+          _isLoading = false;
+        });
+        _applyFilters();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Erro ao carregar imóveis. Verifique sua conexão.';
+        });
+      }
+    }
   }
 
   void _applyFilters() {
@@ -73,36 +121,43 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
   }
 
   void _navigateToAddProperty() async {
-    if (widget.apiClient == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Faça login para adicionar imóveis'),
-          backgroundColor: AppColors.warning,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
-      return;
-    }
-
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => AddPropertyScreen(apiClient: widget.apiClient!),
+        builder: (_) => AddPropertyScreen(apiClient: _apiClient),
       ),
     );
 
     if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Imóvel adicionado com sucesso!'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      _loadProperties();
+    }
+  }
+
+  Future<void> _deleteProperty(PropertyModel property) async {
+    try {
+      await _apiClient.delete('${ApiConstants.properties}/${property.id}');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Imóvel excluído com sucesso'),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+        _loadProperties();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao excluir imóvel'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
     }
   }
 
@@ -111,7 +166,10 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _PropertyDetailSheet(property: property),
+      builder: (context) => _PropertyDetailSheet(
+        property: property,
+        onDelete: () => _deleteProperty(property),
+      ),
     );
   }
 
@@ -119,208 +177,255 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Meus Imóveis',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                    ),
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Iconsax.add, color: Colors.white),
-                        onPressed: _navigateToAddProperty,
-                      ),
-                    ),
-                  ],
-                ).animate().fadeIn(duration: 500.ms),
-              ),
+        child: RefreshIndicator(
+          onRefresh: _loadProperties,
+          color: AppColors.primary,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
-
-            // Search bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    _searchQuery = value;
-                    _applyFilters();
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Buscar imóveis...',
-                    prefixIcon:
-                        const Icon(Iconsax.search_normal, size: 20),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.close, size: 20),
-                            onPressed: () {
-                              _searchController.clear();
-                              _searchQuery = '';
-                              _applyFilters();
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: AppColors.surfaceVariant,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
-              ),
-            ),
-
-            // Filter chips
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: _filters.map((filter) {
-                      final isSelected = _selectedFilter == filter;
-                      return Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text(filter),
-                          selected: isSelected,
-                          onSelected: (_) {
-                            setState(() {
-                              _selectedFilter = filter;
-                            });
-                            _applyFilters();
-                          },
-                          selectedColor:
-                              AppColors.primary.withValues(alpha: 0.15),
-                          backgroundColor: AppColors.surface,
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                            fontSize: 13,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.surfaceVariant,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
-              ),
-            ),
-
-            // Count
-            if (_allProperties.isNotEmpty)
+            slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                  child: Text(
-                    '${_filteredProperties.length} imóve${_filteredProperties.length == 1 ? 'l' : 'is'} encontrado${_filteredProperties.length == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textTertiary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Meus Imóveis',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ),
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Iconsax.add, color: Colors.white),
+                          onPressed: _navigateToAddProperty,
+                        ),
+                      ),
+                    ],
+                  ).animate().fadeIn(duration: 500.ms),
                 ),
               ),
 
-            // Empty state or property list
-            if (_filteredProperties.isEmpty)
-              SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceVariant,
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: const Icon(
-                          Iconsax.home_2,
-                          size: 48,
-                          color: AppColors.textTertiary,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _allProperties.isEmpty
-                            ? 'Nenhum imóvel cadastrado'
-                            : 'Nenhum resultado encontrado',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _allProperties.isEmpty
-                            ? 'Adicione seu primeiro imóvel\npara começar a usar a IA'
-                            : 'Tente buscar com outros termos\nou altere os filtros',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      if (_allProperties.isEmpty) ...[
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          onPressed: _navigateToAddProperty,
-                          icon: const Icon(Iconsax.add, color: Colors.white),
-                          label: const Text('Adicionar Imóvel'),
-                        ),
-                      ],
-                    ],
-                  ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final property = _filteredProperties[index];
-                      return GestureDetector(
-                        onTap: () => _openPropertyDetail(property),
-                        child: _buildPropertyCard(context, property)
-                            .animate()
-                            .fadeIn(
-                              delay: Duration(
-                                  milliseconds: 400 + index * 100),
-                              duration: 500.ms,
-                            )
-                            .slideY(begin: 0.1),
-                      );
+              // Search bar
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      _searchQuery = value;
+                      _applyFilters();
                     },
-                    childCount: _filteredProperties.length,
-                  ),
+                    decoration: InputDecoration(
+                      hintText: 'Buscar imóveis...',
+                      prefixIcon:
+                          const Icon(Iconsax.search_normal, size: 20),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                _searchQuery = '';
+                                _applyFilters();
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AppColors.surfaceVariant,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
                 ),
               ),
-          ],
+
+              // Filter chips
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _filters.map((filter) {
+                        final isSelected = _selectedFilter == filter;
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(filter),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              setState(() {
+                                _selectedFilter = filter;
+                              });
+                              _applyFilters();
+                            },
+                            selectedColor:
+                                AppColors.primary.withValues(alpha: 0.15),
+                            backgroundColor: AppColors.surface,
+                            labelStyle: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              fontSize: 13,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.surfaceVariant,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
+                ),
+              ),
+
+              // Loading state
+              if (_isLoading)
+                const SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Carregando imóveis...'),
+                      ],
+                    ),
+                  ),
+                )
+              // Error state
+              else if (_errorMessage != null)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Iconsax.warning_2, size: 48, color: AppColors.error),
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: _loadProperties,
+                          icon: const Icon(Iconsax.refresh, color: Colors.white),
+                          label: const Text('Tentar Novamente'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else ...[
+                // Count
+                if (_allProperties.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                      child: Text(
+                        '${_filteredProperties.length} imóve${_filteredProperties.length == 1 ? 'l' : 'is'} encontrado${_filteredProperties.length == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textTertiary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Empty state or property list
+                if (_filteredProperties.isEmpty)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceVariant,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: const Icon(
+                              Iconsax.home_2,
+                              size: 48,
+                              color: AppColors.textTertiary,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            _allProperties.isEmpty
+                                ? 'Nenhum imóvel cadastrado'
+                                : 'Nenhum resultado encontrado',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _allProperties.isEmpty
+                                ? 'Adicione seu primeiro imóvel\npara começar a usar a IA'
+                                : 'Tente buscar com outros termos\nou altere os filtros',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          if (_allProperties.isEmpty) ...[
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: _navigateToAddProperty,
+                              icon: const Icon(Iconsax.add, color: Colors.white),
+                              label: const Text('Adicionar Imóvel'),
+                            ),
+                          ],
+                        ],
+                      ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final property = _filteredProperties[index];
+                          return GestureDetector(
+                            onTap: () => _openPropertyDetail(property),
+                            child: _buildPropertyCard(context, property)
+                                .animate()
+                                .fadeIn(
+                                  delay: Duration(
+                                      milliseconds: 400 + index * 100),
+                                  duration: 500.ms,
+                                )
+                                .slideY(begin: 0.1),
+                          );
+                        },
+                        childCount: _filteredProperties.length,
+                      ),
+                    ),
+                  ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -344,7 +449,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image placeholder
+          // Image or placeholder
           Container(
             height: 180,
             decoration: BoxDecoration(
@@ -354,13 +459,27 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
             ),
             child: Stack(
               children: [
-                Center(
-                  child: Icon(
-                    Iconsax.image,
-                    size: 48,
-                    color: AppColors.textTertiary,
+                if (property.images.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    child: Image.network(
+                      property.images.first,
+                      width: double.infinity,
+                      height: 180,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Icon(Iconsax.image, size: 48, color: AppColors.textTertiary),
+                      ),
+                    ),
+                  )
+                else
+                  Center(
+                    child: Icon(
+                      Iconsax.image,
+                      size: 48,
+                      color: AppColors.textTertiary,
+                    ),
                   ),
-                ),
                 // Type badge
                 Positioned(
                   top: 12,
@@ -540,8 +659,12 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
 
 class _PropertyDetailSheet extends StatelessWidget {
   final PropertyModel property;
+  final VoidCallback onDelete;
 
-  const _PropertyDetailSheet({required this.property});
+  const _PropertyDetailSheet({
+    required this.property,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -574,7 +697,7 @@ class _PropertyDetailSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image placeholder
+                      // Image
                       Container(
                         height: 220,
                         width: double.infinity,
@@ -582,10 +705,24 @@ class _PropertyDetailSheet extends StatelessWidget {
                           color: AppColors.surfaceVariant,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Center(
-                          child: Icon(Iconsax.image,
-                              size: 64, color: AppColors.textTertiary),
-                        ),
+                        child: property.images.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  property.images.first,
+                                  width: double.infinity,
+                                  height: 220,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => const Center(
+                                    child: Icon(Iconsax.image,
+                                        size: 64, color: AppColors.textTertiary),
+                                  ),
+                                ),
+                              )
+                            : const Center(
+                                child: Icon(Iconsax.image,
+                                    size: 64, color: AppColors.textTertiary),
+                              ),
                       ),
                       const SizedBox(height: 20),
 
@@ -668,6 +805,50 @@ class _PropertyDetailSheet extends StatelessWidget {
                             fontSize: 15,
                             color: AppColors.textSecondary,
                             height: 1.6,
+                          ),
+                        ),
+                      ],
+
+                      // AI Description
+                      if (property.aiDescription != null) ...[
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.15),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Iconsax.magic_star,
+                                      size: 18, color: AppColors.primary),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Descrição IA',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                property.aiDescription!,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -762,18 +943,7 @@ class _PropertyDetailSheet extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.pop(ctx);
                                       Navigator.pop(context);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                              'Imóvel excluído com sucesso'),
-                                          backgroundColor: AppColors.error,
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                        ),
-                                      );
+                                      onDelete();
                                     },
                                     child: Text('Excluir',
                                         style: TextStyle(

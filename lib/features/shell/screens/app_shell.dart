@@ -38,7 +38,7 @@ class _AppShellState extends State<AppShell> {
     super.initState();
     _screens = [
       HomeScreen(user: widget.user),
-      const PropertiesScreen(),
+      PropertiesScreen(apiClient: widget.apiClient),
       AiChatScreen(apiClient: widget.apiClient),
       ProfileScreen(user: widget.user),
     ];

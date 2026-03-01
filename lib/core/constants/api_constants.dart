@@ -8,9 +8,11 @@ class ApiConstants {
   static const String register = '/auth/register';
   static const String authRefresh = '/auth/refresh';
   static const String me = '/auth/me';
+  static const String forgotPassword = '/auth/forgot-password';
 
   // Users
   static const String profile = '/users/me';
+  static const String updateProfile = '/users/me';
   static const String dashboard = '/users/me/stats';
 
   // Properties

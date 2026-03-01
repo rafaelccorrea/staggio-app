@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 
 class HelpScreen extends StatelessWidget {
@@ -132,33 +133,23 @@ class HelpScreen extends StatelessWidget {
                   icon: Iconsax.sms,
                   title: 'Email',
                   subtitle: 'suporte@staggio.app',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Abrindo email...'),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
+                  onTap: () async {
+                    final uri = Uri.parse('mailto:suporte@staggio.app');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    }
                   },
                 ),
                 Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
                 _buildContactTile(
                   icon: Iconsax.message_text,
                   title: 'WhatsApp',
-                  subtitle: '+55 11 99999-9999',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Abrindo WhatsApp...'),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
+                  subtitle: 'Fale conosco',
+                  onTap: () async {
+                    final uri = Uri.parse('https://wa.me/5511999999999?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20Staggio');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
                   },
                 ),
                 Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
@@ -166,16 +157,11 @@ class HelpScreen extends StatelessWidget {
                   icon: Iconsax.instagram,
                   title: 'Instagram',
                   subtitle: '@staggio.app',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Abrindo Instagram...'),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
+                  onTap: () async {
+                    final uri = Uri.parse('https://instagram.com/staggio.app');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
                   },
                 ),
               ],

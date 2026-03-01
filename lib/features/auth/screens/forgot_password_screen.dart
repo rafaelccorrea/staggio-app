@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/constants/api_constants.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -27,8 +29,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     setState(() => _isLoading = true);
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final apiClient = ApiClient();
+      await apiClient.post(
+        ApiConstants.forgotPassword,
+        data: {'email': _emailController.text.trim()},
+      );
+    } catch (e) {
+      // Even if the backend returns an error (e.g., email not found),
+      // we show success to avoid leaking whether an email exists.
+    }
 
     if (mounted) {
       setState(() {
