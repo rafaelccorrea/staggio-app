@@ -4,8 +4,8 @@ import 'dart:developer' as dev;
 class VideoCacheService {
   static final VideoCacheService _instance = VideoCacheService._internal();
   static final Map<String, VideoPlayerController> _cache = {};
+  static final Map<String, Future<void>> _initFutures = {};
   static bool _isPreloading = false;
-  static final Set<String> _preloadedUrls = {};
 
   factory VideoCacheService() {
     return _instance;
@@ -14,13 +14,14 @@ class VideoCacheService {
   VideoCacheService._internal();
 
   /// Get or create a cached video controller
+  /// The controller may or may not be initialized yet
   static VideoPlayerController getController(String url) {
     if (_cache.containsKey(url)) {
       final cached = _cache[url]!;
-      // Se o controller foi descartado externamente, recria
       if (_isDisposed(cached)) {
         dev.log('[VIDEO_CACHE] Controller descartado, recriando: $url', name: 'VideoCacheService');
         _cache.remove(url);
+        _initFutures.remove(url);
       } else {
         dev.log('[VIDEO_CACHE] Usando vídeo em cache: $url', name: 'VideoCacheService');
         return cached;
@@ -29,11 +30,46 @@ class VideoCacheService {
 
     dev.log('[VIDEO_CACHE] Criando novo controller para: $url', name: 'VideoCacheService');
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
-    controller.initialize().then((_) {
-      controller.setLooping(true);
-    });
     _cache[url] = controller;
+    // Do NOT call initialize here - let the caller handle it
     return controller;
+  }
+
+  /// Get the initialization future for a controller
+  static Future<void> ensureInitialized(String url) async {
+    if (_initFutures.containsKey(url)) {
+      await _initFutures[url];
+      return;
+    }
+
+    final controller = getController(url);
+    if (controller.value.isInitialized) {
+      dev.log('[VIDEO_CACHE] Already initialized: $url', name: 'VideoCacheService');
+      return;
+    }
+
+    final future = _doInitialize(url, controller);
+    _initFutures[url] = future;
+    await future;
+  }
+
+  static Future<void> _doInitialize(String url, VideoPlayerController controller) async {
+    try {
+      controller.setVolume(0.0);
+      await controller.initialize().timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          dev.log('[VIDEO_CACHE] Timeout initializing: $url', name: 'VideoCacheService');
+        },
+      );
+      if (controller.value.isInitialized) {
+        controller.setLooping(true);
+        controller.setVolume(0.0);
+        dev.log('[VIDEO_CACHE] Initialized successfully: $url', name: 'VideoCacheService');
+      }
+    } catch (e) {
+      dev.log('[VIDEO_CACHE] Error initializing $url: $e', name: 'VideoCacheService');
+    }
   }
 
   /// Verifica se um controller foi descartado
@@ -46,18 +82,8 @@ class VideoCacheService {
     }
   }
 
-  /// Check if videos are already preloaded
-  static bool areVideosPreloaded(List<String> videoUrls) {
-    return videoUrls.every((url) => _preloadedUrls.contains(url));
-  }
-
   /// Pre-load videos in background
   static Future<void> preloadVideos(List<String> videoUrls) async {
-    // Skip if already preloaded
-    if (areVideosPreloaded(videoUrls)) {
-      dev.log('[VIDEO_CACHE] Videos already preloaded, skipping', name: 'VideoCacheService');
-      return;
-    }
     if (_isPreloading) {
       dev.log('[VIDEO_CACHE] Pré-carregamento já em progresso', name: 'VideoCacheService');
       return;
@@ -68,27 +94,19 @@ class VideoCacheService {
 
     try {
       for (final url in videoUrls) {
-        if (_cache.containsKey(url)) {
-          dev.log('[VIDEO_CACHE] Vídeo já em cache: $url', name: 'VideoCacheService');
-          continue;
-        }
-
-        try {
-          final controller = VideoPlayerController.networkUrl(Uri.parse(url));
-          await controller.initialize();
-          controller.setLooping(true);
-          controller.setVolume(0.0);
-          _cache[url] = controller;
-          _preloadedUrls.add(url); // Mark as preloaded
-          dev.log('[VIDEO_CACHE] Vídeo pré-carregado: $url', name: 'VideoCacheService');
-        } catch (e) {
-          dev.log('[VIDEO_CACHE] Erro ao pré-carregar $url: $e', name: 'VideoCacheService', error: e);
-        }
+        await ensureInitialized(url);
       }
     } finally {
       _isPreloading = false;
       dev.log('[VIDEO_CACHE] Pré-carregamento concluído', name: 'VideoCacheService');
     }
+  }
+
+  /// Check if a video is cached and initialized
+  static bool isReady(String url) {
+    if (!_cache.containsKey(url)) return false;
+    final controller = _cache[url]!;
+    return !_isDisposed(controller) && controller.value.isInitialized;
   }
 
   /// Check if a video is cached
@@ -103,6 +121,7 @@ class VideoCacheService {
       await controller.dispose();
     }
     _cache.clear();
+    _initFutures.clear();
   }
 
   /// Clear a specific video from cache
@@ -110,6 +129,7 @@ class VideoCacheService {
     if (_cache.containsKey(url)) {
       await _cache[url]!.dispose();
       _cache.remove(url);
+      _initFutures.remove(url);
       dev.log('[VIDEO_CACHE] Vídeo removido do cache: $url', name: 'VideoCacheService');
     }
   }
