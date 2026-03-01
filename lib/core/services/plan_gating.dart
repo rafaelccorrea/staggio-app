@@ -37,7 +37,7 @@ class PlanGating {
           children: [
             Icon(Icons.lock_outline, color: AppColors.primary, size: 24),
             const SizedBox(width: 10),
-            const Text('Recurso Bloqueado'),
+            const Flexible(child: Text('Recurso Bloqueado')),
           ],
         ),
         content: Column(
@@ -85,7 +85,7 @@ class PlanGating {
           children: [
             Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 24),
             const SizedBox(width: 10),
-            const Text('Sem Créditos'),
+            const Flexible(child: Text('Sem Créditos')),
           ],
         ),
         content: const Text(
