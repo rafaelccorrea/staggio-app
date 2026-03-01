@@ -249,7 +249,7 @@ class FeaturesScreen extends StatelessWidget {
   Color _getPlanColor() {
     if (user.aiCreditsLimit >= 200) return const Color(0xFF7C3AED);
     if (user.aiCreditsLimit >= 50) return AppColors.primary;
-    return const Color(0xFF64748B);
+    return const Color(0xFF94A3B8);
   }
 
   String _getPlanDescription() {
