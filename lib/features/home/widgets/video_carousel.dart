@@ -51,6 +51,7 @@ class _VideoCarouselState extends State<VideoCarousel> {
         if (!controller.value.isInitialized) {
           await controller.initialize();
           controller.setLooping(true);
+          controller.setVolume(0.0); // Mute by default
         }
       } catch (e) {
         debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar vídeo: $e');
