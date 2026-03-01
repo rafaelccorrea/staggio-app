@@ -109,13 +109,16 @@ class _AppRootState extends State<_AppRoot> {
       listener: (context, state) {
         setState(() => _initialCheckDone = true);
       },
-      buildWhen: (previous, current) =>
-          current is AuthInitial ||
-          current is AuthAuthenticated ||
-          current is AuthUnauthenticated,
+      buildWhen: (previous, current) => true,
       builder: (context, state) {
         // Show splash until both auth check is done AND minimum time has passed
-        if (!_initialCheckDone || !_splashMinTimePassed || state is AuthInitial) {
+        // AND we're not in initial state
+        if (!_initialCheckDone || !_splashMinTimePassed) {
+          return const _SplashScreen();
+        }
+        
+        // If still in initial state, show splash
+        if (state is AuthInitial) {
           return const _SplashScreen();
         }
         // Show onboarding only on first launch
