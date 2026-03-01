@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
+import 'core/contexts/theme_context.dart';
 import 'core/network/api_client.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
 import 'features/auth/screens/login_screen.dart';
-import 'features/auth/screens/register_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/shell/screens/app_shell.dart';
 
@@ -53,13 +53,24 @@ class StaggioApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final apiClient = ApiClient();
 
-    return BlocProvider(
-      create: (_) => AuthBloc(apiClient: apiClient)..add(AuthCheckRequested()),
-      child: MaterialApp(
-        title: 'Staggio',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: _AppRoot(apiClient: apiClient, onboardingDone: onboardingDone),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        BlocProvider(
+          create: (_) => AuthBloc(apiClient: apiClient)..add(AuthCheckRequested()),
+        ),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Staggio',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: _AppRoot(apiClient: apiClient, onboardingDone: onboardingDone),
+          );
+        },
       ),
     );
   }
@@ -198,17 +209,17 @@ class _SplashScreenState extends State<_SplashScreen>
               bottom: -100,
               left: -100,
               child: AnimatedBuilder(
-                animation: _pulseController,
+                animation: _glowController,
                 builder: (context, child) {
                   return Container(
-                    width: 300 + (_pulseController.value * 40),
-                    height: 300 + (_pulseController.value * 40),
+                    width: 300 + (_glowController.value * 50),
+                    height: 300 + (_glowController.value * 50),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          const Color(0xFF26A69A).withValues(alpha: 0.12),
-                          const Color(0xFF26A69A).withValues(alpha: 0.0),
+                          const Color(0xFF6C5CE7).withValues(alpha: 0.1),
+                          const Color(0xFF6C5CE7).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -216,115 +227,38 @@ class _SplashScreenState extends State<_SplashScreen>
                 },
               ),
             ),
-            // Main content
+            // Logo with pulse animation
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo with glow effect
-                  AnimatedBuilder(
-                    animation: _glowController,
-                    builder: (context, child) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1E88E5).withValues(
-                                alpha: 0.2 + (_glowController.value * 0.15),
-                              ),
-                              blurRadius: 40 + (_glowController.value * 20),
-                              spreadRadius: 5,
-                            ),
-                            BoxShadow(
-                              color: const Color(0xFF26A69A).withValues(
-                                alpha: 0.15 + (_glowController.value * 0.1),
-                              ),
-                              blurRadius: 60 + (_glowController.value * 30),
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(36),
-                          child: Image.asset(
-                            'assets/images/staggio_icon.png',
-                            width: 140,
-                            height: 140,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                      .animate()
-                      .fadeIn(duration: 800.ms)
-                      .scale(
-                        begin: const Offset(0.3, 0.3),
-                        end: const Offset(1.0, 1.0),
-                        curve: Curves.elasticOut,
-                        duration: 1200.ms,
-                      ),
-                  const SizedBox(height: 36),
-                  // App name
-                  const Text(
-                    'Staggio',
-                    style: TextStyle(
-                      fontSize: 44,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      fontFamily: 'Poppins',
-                      letterSpacing: -1.5,
+                  ScaleTransition(
+                    scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
                     ),
-                  )
-                      .animate()
-                      .fadeIn(delay: 400.ms, duration: 600.ms)
-                      .slideY(begin: 0.5),
-                  const SizedBox(height: 10),
-                  // Tagline
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Color(0xFF64B5F6), Color(0xFF4DD0E1)],
-                    ).createShader(bounds),
+                    child: Image.asset(
+                      'assets/images/staggio_logo.png',
+                      width: 120,
+                      height: 120,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FadeTransition(
+                    opacity: Tween<double>(begin: 0.5, end: 1.0).animate(
+                      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+                    ),
                     child: const Text(
-                      'IA para Corretores de Imóveis',
+                      'Staggio',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
                         color: Colors.white,
-                        letterSpacing: 1.0,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                  )
-                      .animate()
-                      .fadeIn(delay: 700.ms, duration: 600.ms)
-                      .slideY(begin: 0.3),
-                  const SizedBox(height: 60),
-                  // Loading indicator
-                  SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: const Color(0xFF1E88E5).withValues(alpha: 0.6),
-                    ),
-                  ).animate().fadeIn(delay: 1000.ms, duration: 500.ms),
+                  ),
                 ],
               ),
-            ),
-            // Version
-            Positioned(
-              bottom: 40,
-              left: 0,
-              right: 0,
-              child: const Text(
-                'v1.0.0',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF546E7A),
-                ),
-              ).animate().fadeIn(delay: 1500.ms, duration: 500.ms),
             ),
           ],
         ),
@@ -333,46 +267,32 @@ class _SplashScreenState extends State<_SplashScreen>
   }
 }
 
-class _AuthFlow extends StatefulWidget {
+class _AuthFlow extends StatelessWidget {
   final ApiClient apiClient;
   final bool onboardingDone;
 
-  const _AuthFlow({required this.apiClient, required this.onboardingDone});
-
-  @override
-  State<_AuthFlow> createState() => _AuthFlowState();
-}
-
-class _AuthFlowState extends State<_AuthFlow> {
-  late bool _showOnboarding;
-  bool _showLogin = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _showOnboarding = !widget.onboardingDone;
-  }
-
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_done', true);
-    setState(() => _showOnboarding = false);
-  }
+  const _AuthFlow({
+    required this.apiClient,
+    required this.onboardingDone,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (_showOnboarding) {
-      return OnboardingScreen(onComplete: _completeOnboarding);
-    }
-
-    if (_showLogin) {
+    if (onboardingDone) {
       return LoginScreen(
-        onRegisterTap: () => setState(() => _showLogin = false),
+        onRegisterTap: () {
+          // Navigate to register
+        },
       );
     }
-
-    return RegisterScreen(
-      onLoginTap: () => setState(() => _showLogin = true),
+    return OnboardingScreen(
+      onComplete: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('onboarding_done', true);
+        if (context.mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
+      },
     );
   }
 }
