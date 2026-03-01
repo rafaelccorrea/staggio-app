@@ -27,13 +27,25 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
   Future<void> _loadGenerations() async {
     try {
       final response = await widget.apiClient.get('/generations');
-      final List<dynamic> data = response.data is List ? response.data : [];
-      setState(() {
-        _generations = data.map((e) => GenerationModel.fromJson(e)).toList();
-        _isLoading = false;
-      });
+      List<dynamic> data = [];
+      if (response.data is Map) {
+        final map = response.data as Map<String, dynamic>;
+        if (map.containsKey('data')) {
+          data = map['data'] is List ? map['data'] : [];
+        }
+      } else if (response.data is List) {
+        data = response.data;
+      }
+      if (mounted) {
+        setState(() {
+          _generations = data.map((e) => GenerationModel.fromJson(e as Map<String, dynamic>)).toList();
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

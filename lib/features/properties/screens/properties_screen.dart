@@ -204,7 +204,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: IconButton(
-                          icon: const Icon(Iconsax.add, color: Colors.white),
+                          icon: Icon(Iconsax.add, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                           onPressed: _navigateToAddProperty,
                         ),
                       ),
@@ -329,7 +329,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
                           onPressed: _loadProperties,
-                          icon: const Icon(Iconsax.refresh, color: Colors.white),
+                          icon: Icon(Iconsax.refresh, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                           label: const Text('Tentar Novamente'),
                         ),
                       ],
@@ -392,7 +392,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                             const SizedBox(height: 24),
                             ElevatedButton.icon(
                               onPressed: _navigateToAddProperty,
-                              icon: const Icon(Iconsax.add, color: Colors.white),
+                              icon: Icon(Iconsax.add, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                               label: const Text('Adicionar Imóvel'),
                             ),
                           ],
@@ -440,7 +440,9 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -488,12 +490,14 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.surface.withValues(alpha: 0.9)
+                          : Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       property.typeDisplayName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
@@ -514,10 +518,10 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                     ),
                     child: Text(
                       property.statusDisplayName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
                       ),
                     ),
                   ),
@@ -615,8 +619,8 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                             ),
                           );
                         },
-                        icon: const Icon(Iconsax.magic_star,
-                            size: 16, color: Colors.white),
+                        icon: Icon(Iconsax.magic_star,
+                            size: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                         label: const Text('Usar IA'),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -904,8 +908,8 @@ class _PropertyDetailSheet extends StatelessWidget {
                                   ),
                                 );
                               },
-                              icon: const Icon(Iconsax.magic_star,
-                                  size: 18, color: Colors.white),
+                              icon: Icon(Iconsax.magic_star,
+                                  size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white),
                               label: const Text('Usar IA'),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
