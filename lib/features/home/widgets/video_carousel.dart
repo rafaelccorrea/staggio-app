@@ -68,6 +68,23 @@ class _VideoCarouselState extends State<VideoCarousel> {
     });
   }
 
+  Future<void> _initializeControllerAt(int index) async {
+    if (_disposed || index >= _controllers.length) return;
+    try {
+      final controller = _controllers[index];
+      if (!controller.value.isInitialized) {
+        await controller.initialize().timeout(const Duration(seconds: 20));
+        controller.setLooping(true);
+        controller.setVolume(0.0);
+      }
+      if (mounted && !_disposed && index == _currentIndex && !controller.value.isPlaying) {
+        controller.play();
+      }
+    } catch (e) {
+      debugPrint('[VIDEO_CAROUSEL] Erro ao inicializar controller[$index]: $e');
+    }
+  }
+
   Future<void> _preloadOtherVideos() async {
     for (int i = 1; i < _controllers.length; i++) {
       if (_disposed) return;
@@ -145,6 +162,11 @@ class _VideoCarouselState extends State<VideoCarousel> {
             },
             itemCount: widget.videos.length,
             itemBuilder: (context, index) {
+              // Recriar controller se foi descartado
+              if (!_isControllerUsable(_controllers[index])) {
+                _controllers[index] = VideoCacheService.getController(widget.videos[index].url);
+                _initializeControllerAt(index);
+              }
               final controller = _controllers[index];
 
               return Container(

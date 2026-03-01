@@ -5,7 +5,6 @@ class VideoCacheService {
   static final VideoCacheService _instance = VideoCacheService._internal();
   static final Map<String, VideoPlayerController> _cache = {};
   static bool _isPreloading = false;
-  static const int _maxCacheSize = 3; // Limit to 3 videos in memory
 
   factory VideoCacheService() {
     return _instance;
@@ -16,26 +15,31 @@ class VideoCacheService {
   /// Get or create a cached video controller
   static VideoPlayerController getController(String url) {
     if (_cache.containsKey(url)) {
-      dev.log('[VIDEO_CACHE] Usando vídeo em cache: $url', name: 'VideoCacheService');
-      return _cache[url]!;
-    }
-
-    // If cache is full, remove oldest entry
-    if (_cache.length >= _maxCacheSize) {
-      final oldestKey = _cache.keys.first;
-      dev.log('[VIDEO_CACHE] Cache cheio, removendo: $oldestKey', name: 'VideoCacheService');
-      try {
-        _cache[oldestKey]?.dispose();
-      } catch (e) {
-        dev.log('[VIDEO_CACHE] Erro ao descartar vídeo: $e', name: 'VideoCacheService');
+      final cached = _cache[url]!;
+      // Se o controller foi descartado externamente, recria
+      if (_isDisposed(cached)) {
+        dev.log('[VIDEO_CACHE] Controller descartado, recriando: $url', name: 'VideoCacheService');
+        _cache.remove(url);
+      } else {
+        dev.log('[VIDEO_CACHE] Usando vídeo em cache: $url', name: 'VideoCacheService');
+        return cached;
       }
-      _cache.remove(oldestKey);
     }
 
     dev.log('[VIDEO_CACHE] Criando novo controller para: $url', name: 'VideoCacheService');
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     _cache[url] = controller;
     return controller;
+  }
+
+  /// Verifica se um controller foi descartado
+  static bool _isDisposed(VideoPlayerController controller) {
+    try {
+      controller.value;
+      return false;
+    } catch (_) {
+      return true;
+    }
   }
 
   /// Pre-load videos in background
