@@ -66,8 +66,12 @@ class _VideoCarouselState extends State<VideoCarousel> {
         );
       }
       controller.setLooping(true);
-      if (!controller.value.isInitialized) controller.setVolume(0.0);
-      if (mounted && !_disposed && index == 0 && !controller.value.isPlaying) {
+      // Ensure volume is 0 after initialization
+      if (controller.value.isInitialized) {
+        controller.setVolume(0.0);
+      }
+      // Play first video immediately after initialization
+      if (mounted && !_disposed && index == 0 && controller.value.isInitialized && !controller.value.isPlaying) {
         controller.play();
       }
     } catch (e) {
