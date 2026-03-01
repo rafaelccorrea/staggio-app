@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "87980882807",
+    "project_id": "project-8798088280",
+    "storage_bucket": "project-8798088280.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87980882807:android:staggio",
+        "android_client_info": {
+          "package_name": "com.staggio.staggio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "87980882807-jd1noi7gka0ebqh3mo2llfbloia4hmpi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDummy"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "87980882807-jd1noi7gka0ebqh3mo2llfbloia4hmpi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
