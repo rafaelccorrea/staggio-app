@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'dart:ui';
-import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/ai_features.dart';
 import 'ai_feature_info_modal.dart';
 
