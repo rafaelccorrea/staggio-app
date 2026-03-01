@@ -95,8 +95,8 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              // Navigate back to login
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              // Emit logout event
+              context.read<AuthBloc>().add(AuthLogoutRequested());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,

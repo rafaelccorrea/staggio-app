@@ -389,15 +389,19 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                               crossAxisAlignment:
                                   CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${pack.credits} Créditos',
-                                      style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    if (pack.discount != null) ...[
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '${pack.credits} Créditos',
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w700),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (pack.discount != null) ...[
                                       const SizedBox(width: 8),
                                       Container(
                                         padding:
@@ -420,7 +424,8 @@ class _BuyCreditsScreenState extends State<BuyCreditsScreen> {
                                         ),
                                       ),
                                     ],
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 SizedBox(height: 2),
                                 Text(
