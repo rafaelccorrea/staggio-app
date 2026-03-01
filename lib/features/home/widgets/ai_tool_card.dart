@@ -229,22 +229,27 @@ class _AiToolCardState extends State<AiToolCard> with SingleTickerProviderStateM
                       );
                     }
                   },
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        width: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Iconsax.info_circle,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
-                      backdropFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    ),
-                    child: const Icon(
-                      Iconsax.info_circle,
-                      color: Colors.white,
-                      size: 18,
                     ),
                   ),
                 ),
