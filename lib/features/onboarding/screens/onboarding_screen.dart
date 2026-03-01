@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/services/video_cache_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onComplete;
@@ -21,26 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    // Preload videos while showing onboarding
-    _preloadVideos();
-  }
-
-  Future<void> _preloadVideos() async {
-    try {
-      debugPrint('[ONBOARDING] Starting video preload');
-      
-      // Preload demo videos in background
-      final videoUrls = [
-        'https://cdn.example.com/staggio_video_1.mp4',
-        'https://cdn.example.com/staggio_video_2.mp4',
-      ];
-      
-      // Use the VideoCacheService preloadVideos method which handles caching
-      await VideoCacheService.preloadVideos(videoUrls);
-      debugPrint('[ONBOARDING] Videos preloaded successfully');
-    } catch (e) {
-      debugPrint('[ONBOARDING] Error in _preloadVideos: $e');
-    }
+    // Videos are already preloaded in splash screen
   }
 
   final List<_OnboardingPage> _pages = [

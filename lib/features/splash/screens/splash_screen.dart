@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../../core/services/video_cache_service.dart';
 
 class SplashScreen extends StatefulWidget {
   final VoidCallback onComplete;
@@ -23,9 +24,35 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
 
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      if (mounted) widget.onComplete();
-    });
+    // Start video preloading immediately
+    _preloadVideosAndComplete();
+  }
+
+  Future<void> _preloadVideosAndComplete() async {
+    try {
+      final videoUrls = [
+        'https://cdn.example.com/staggio_video_1.mp4',
+        'https://cdn.example.com/staggio_video_2.mp4',
+      ];
+
+      // Preload videos
+      await VideoCacheService.preloadVideos(videoUrls);
+      debugPrint('[SPLASH] Videos preloaded successfully');
+
+      // Wait minimum 2 seconds for splash animation
+      await Future.delayed(const Duration(milliseconds: 2000));
+
+      if (mounted) {
+        widget.onComplete();
+      }
+    } catch (e) {
+      debugPrint('[SPLASH] Error preloading videos: $e');
+      // Continue anyway after 3 seconds
+      await Future.delayed(const Duration(milliseconds: 3000));
+      if (mounted) {
+        widget.onComplete();
+      }
+    }
   }
 
   @override
