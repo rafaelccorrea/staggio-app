@@ -322,7 +322,10 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(ctx);
+                          Navigator.pop(ctx); // close dialog
+                          // Pop all screens back to root first
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          // Then emit logout event
                           context.read<AuthBloc>().add(AuthLogoutRequested());
                         },
                         style: ElevatedButton.styleFrom(

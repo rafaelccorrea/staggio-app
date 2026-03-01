@@ -9,6 +9,7 @@ import '../../../core/constants/api_constants.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/bloc/auth_state.dart';
+import '../../auth/screens/login_screen.dart';
 
 class PlansScreen extends StatefulWidget {
   const PlansScreen({super.key});
@@ -89,8 +90,17 @@ class _PlansScreenState extends State<PlansScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
-                // Trigger login flow - logout to show login screen
-                context.read<AuthBloc>().add(AuthLogoutRequested());
+                // Pop all screens back to root, then show login
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                // Navigate to login screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LoginScreen(
+                      onRegisterTap: () => Navigator.pop(context),
+                    ),
+                  ),
+                );
               },
               child: const Text('Fazer Login'),
             ),
@@ -293,8 +303,16 @@ class _PlansScreenState extends State<PlansScreen> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    // Trigger login flow - logout to show login screen
-                    context.read<AuthBloc>().add(AuthLogoutRequested());
+                    // Pop all screens back to root, then show login
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LoginScreen(
+                          onRegisterTap: () => Navigator.pop(context),
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,

@@ -87,14 +87,13 @@ class _AppRoot extends StatefulWidget {
 }
 
 class _AppRootState extends State<_AppRoot> {
-  bool _initialCheckDone = false;
   bool _splashMinTimePassed = false;
 
   @override
   void initState() {
     super.initState();
-    // Minimum splash screen duration of 2.5 seconds
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // Minimum splash screen duration of 2 seconds
+    Future.delayed(const Duration(milliseconds: 2000), () {
       if (mounted) {
         setState(() => _splashMinTimePassed = true);
       }
@@ -103,27 +102,13 @@ class _AppRootState extends State<_AppRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          current is AuthAuthenticated || current is AuthUnauthenticated || current is AuthError,
-      listener: (context, state) {
-        // Mark initial check as done when we get any final state
-        if (state is AuthAuthenticated || state is AuthUnauthenticated || state is AuthError) {
-          setState(() => _initialCheckDone = true);
-        }
-      },
-      buildWhen: (previous, current) => true,
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        // Show splash until both auth check is done AND minimum time has passed
-        // AND we're not in initial state
-        if (!_initialCheckDone || !_splashMinTimePassed) {
+        // Show splash while waiting for initial auth check OR min time
+        if (state is AuthInitial || state is AuthLoading || !_splashMinTimePassed) {
           return const _SplashScreen();
         }
-        
-        // If still in initial state, show splash
-        if (state is AuthInitial) {
-          return const _SplashScreen();
-        }
+
         // Show onboarding only on first launch
         if (!widget.onboardingDone) {
           return OnboardingScreen(
@@ -131,17 +116,28 @@ class _AppRootState extends State<_AppRoot> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('onboarding_done', true);
               if (context.mounted) {
-                // After onboarding, go to app shell as guest
-                Navigator.of(context).pushReplacementNamed('/');
+                // Rebuild to show app shell
+                (context as Element).markNeedsBuild();
               }
             },
           );
         }
+
+        // Authenticated user
         if (state is AuthAuthenticated) {
-          return AppShell(user: state.user, apiClient: widget.apiClient);
+          return AppShell(
+            key: ValueKey('auth_${state.user.id}'),
+            user: state.user,
+            apiClient: widget.apiClient,
+          );
         }
-        // Lazy login: show app as guest, login prompted on action
-        return AppShell(user: UserModel.guest(), apiClient: widget.apiClient);
+
+        // Guest / unauthenticated / error - show app as guest
+        return AppShell(
+          key: const ValueKey('guest'),
+          user: UserModel.guest(),
+          apiClient: widget.apiClient,
+        );
       },
     );
   }
@@ -259,7 +255,6 @@ class _SplashScreenState extends State<_SplashScreen>
                       height: 120,
                     ),
                   ),
-
                 ],
               ),
             ),
