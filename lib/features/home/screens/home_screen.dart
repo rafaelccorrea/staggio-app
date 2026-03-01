@@ -14,12 +14,35 @@ import '../../ai/screens/ai_terrain_screen.dart';
 import '../../ai/screens/ai_photo_enhance_screen.dart';
 import '../../ai/screens/generations_history_screen.dart';
 import '../../../core/services/plan_gating.dart';
+import '../../../core/services/video_cache_service.dart';
 
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final UserModel user;
 
-  HomeScreen({super.key, required this.user});
+  const HomeScreen({super.key, required this.user});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Pre-load showcase videos in background
+    _preloadShowcaseVideos();
+  }
+
+  Future<void> _preloadShowcaseVideos() async {
+    final videoUrls = [
+      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
+      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
+      'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerBlazes.mp4',
+    ];
+    // Pre-load in background without blocking UI
+    await VideoCacheService.preloadVideos(videoUrls);
+  }
 
   ApiClient get _apiClient => ApiClient();
 
@@ -69,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          user.name.isNotEmpty ? user.name[0].toUpperCase() : 'S',
+                          widget.user.name.isNotEmpty ? widget.user.name[0].toUpperCase() : 'S',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -91,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Olá, ${user.name.split(' ').first}! 👋',
+                            'Olá, ${widget.user.name.split(' ').first}! 👋',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -99,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Plano ${user.planDisplayName}',
+                            'Plano ${widget.user.planDisplayName}',
                             style: TextStyle(
                               fontSize: 13,
                               color: AppColors.primary,
@@ -168,7 +191,7 @@ class HomeScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: CreditsCard(user: user)
+                child: CreditsCard(user: widget.user)
                     .animate()
                     .fadeIn(delay: 300.ms, duration: 600.ms)
                     .slideY(begin: 0.2),
@@ -322,7 +345,7 @@ class HomeScreen extends StatelessWidget {
                     icon: Iconsax.building_4,
                     gradient: AppColors.terrainGradient,
                     onTap: () {
-                      if (!PlanGating.hasAccess(user, 'terrain_vision')) {
+                      if (!PlanGating.hasAccess(widget.user, 'terrain_vision')) {
                         PlanGating.showUpgradeDialog(context, 'Visão de Terreno');
                         return;
                       }
@@ -354,7 +377,7 @@ class HomeScreen extends StatelessWidget {
                     icon: Iconsax.camera,
                     gradient: AppColors.cardGradient,
                     onTap: () {
-                      if (!PlanGating.hasAccess(user, 'photo_enhance')) {
+                      if (!PlanGating.hasAccess(widget.user, 'photo_enhance')) {
                         PlanGating.showUpgradeDialog(context, 'Melhorar Foto');
                         return;
                       }

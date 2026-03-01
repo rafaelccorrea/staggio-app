@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../../core/services/video_cache_service.dart';
 
 class VideoCarousel extends StatefulWidget {
   final List<VideoItem> videos;
@@ -32,23 +33,27 @@ class _VideoCarouselState extends State<VideoCarousel> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    // Use cached controllers from VideoCacheService
     _controllers = List.generate(
       widget.videos.length,
-      (index) => VideoPlayerController.networkUrl(
-        Uri.parse(widget.videos[index].url),
-      ),
+      (index) => VideoCacheService.getController(widget.videos[index].url),
     );
     _initializeVideosFuture = _initializeVideos();
   }
 
   Future<void> _initializeVideos() async {
+    // Only initialize controllers that aren't already initialized
     for (var controller in _controllers) {
-      await controller.initialize();
-      controller.setLooping(true);
+      if (!controller.value.isInitialized) {
+        await controller.initialize();
+        controller.setLooping(true);
+      }
     }
     if (mounted) {
       setState(() {
-        _controllers[0].play();
+        if (!_controllers[0].value.isPlaying) {
+          _controllers[0].play();
+        }
       });
     }
   }
