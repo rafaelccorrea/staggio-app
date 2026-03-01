@@ -97,7 +97,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Assistente IA', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('Online', style: TextStyle(fontSize: 12, color: AppColors.success)),
+                Text('Online', style: TextStyle(fontSize: 12, color: Colors.white70)),
               ],
             ),
           ],
@@ -142,7 +142,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           maxWidth: MediaQuery.of(context).size.width * 0.78,
         ),
         decoration: BoxDecoration(
-          color: message.isUser ? AppColors.primary : AppColors.surface,
+          color: message.isUser ? AppColors.primary : Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(20),
             topRight: const Radius.circular(20),
@@ -175,9 +175,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: const BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomRight: Radius.circular(20),
@@ -215,7 +215,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         MediaQuery.of(context).padding.bottom + 12,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -234,7 +234,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               decoration: InputDecoration(
                 hintText: 'Pergunte algo...',
                 filled: true,
-                fillColor: AppColors.surfaceVariant,
+                fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? AppColors.surfaceVariant,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,

@@ -44,7 +44,7 @@ class FeaturesScreen extends StatelessWidget {
             _getIntegrationFeatures(),
           ),
           const SizedBox(height: 32),
-          _buildCreditsInfo(),
+          _buildCreditsInfo(context),
           const SizedBox(height: 32),
         ],
       ),
@@ -178,7 +178,7 @@ class FeaturesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCreditsInfo() {
+  Widget _buildCreditsInfo(BuildContext context) {
     final totalCredits = user.aiCreditsLimit + user.bonusCredits;
     final usedCredits = user.aiCreditsUsed;
     final availableCredits = totalCredits - usedCredits;
@@ -186,7 +186,7 @@ class FeaturesScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

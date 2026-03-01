@@ -238,7 +238,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
                             )
                           : null,
                       filled: true,
-                      fillColor: AppColors.surfaceVariant,
+                      fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? AppColors.surfaceVariant,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
@@ -435,7 +435,7 @@ class _PropertiesScreenState extends State<PropertiesScreen> {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
@@ -674,8 +674,8 @@ class _PropertyDetailSheet extends StatelessWidget {
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: Column(

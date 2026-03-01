@@ -90,7 +90,7 @@ class _GenerationsHistoryScreenState extends State<GenerationsHistoryScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(color: Theme.of(context).dividerColor),
                       ),

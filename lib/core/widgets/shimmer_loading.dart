@@ -23,7 +23,7 @@ class ShimmerLoading extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
+          color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
@@ -39,7 +39,7 @@ class ShimmerPropertyCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(

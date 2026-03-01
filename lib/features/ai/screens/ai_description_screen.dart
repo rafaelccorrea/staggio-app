@@ -286,7 +286,7 @@ class _AiDescriptionScreenState extends State<AiDescriptionScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Theme.of(context).dividerColor),
                   ),

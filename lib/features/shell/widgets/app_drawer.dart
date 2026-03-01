@@ -43,7 +43,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(24),
@@ -170,14 +170,12 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _buildSectionTitle('Principal'),
-                  _buildMenuItem(
-                    icon: Iconsax.home_2,
+                  _buildSectionTitle(context, 'Principal'),
+                  _buildMenuItem(context, icon: Iconsax.home_2,
                     label: 'Início',
                     onTap: onHomeTap,
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.building_4,
+                  _buildMenuItem(context, icon: Iconsax.building_4,
                     label: 'Meus Imóveis',
                     onTap: onPropertiesTap,
                   ),
@@ -187,27 +185,23 @@ class AppDrawer extends StatelessWidget {
                     child: Divider(height: 24),
                   ),
 
-                  _buildSectionTitle('Ferramentas IA'),
-                  _buildMenuItem(
-                    icon: Iconsax.brush_1,
+                  _buildSectionTitle(context, 'Ferramentas IA'),
+                  _buildMenuItem(context, icon: Iconsax.brush_1,
                     label: 'Home Staging',
                     onTap: onStagingTap,
                     badge: 'IA',
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.document_text,
+                  _buildMenuItem(context, icon: Iconsax.document_text,
                     label: 'Descrição Automática',
                     onTap: onDescriptionTap,
                     badge: 'IA',
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.message_text,
+                  _buildMenuItem(context, icon: Iconsax.message_text,
                     label: 'Assistente IA',
                     onTap: onChatTap,
                     badge: 'IA',
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.clock,
+                  _buildMenuItem(context, icon: Iconsax.clock,
                     label: 'Histórico de Gerações',
                     onTap: onHistoryTap,
                   ),
@@ -217,19 +211,16 @@ class AppDrawer extends StatelessWidget {
                     child: Divider(height: 24),
                   ),
 
-                  _buildSectionTitle('Conta'),
-                  _buildMenuItem(
-                    icon: Iconsax.crown,
+                  _buildSectionTitle(context, 'Conta'),
+                  _buildMenuItem(context, icon: Iconsax.crown,
                     label: 'Planos e Assinatura',
                     onTap: onPlansTap,
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.user,
+                  _buildMenuItem(context, icon: Iconsax.user,
                     label: 'Meu Perfil',
                     onTap: onProfileTap,
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.setting_2,
+                  _buildMenuItem(context, icon: Iconsax.setting_2,
                     label: 'Configurações',
                     onTap: onSettingsTap,
                   ),
@@ -239,14 +230,12 @@ class AppDrawer extends StatelessWidget {
                     child: Divider(height: 24),
                   ),
 
-                  _buildMenuItem(
-                    icon: Iconsax.message_question,
+                  _buildMenuItem(context, icon: Iconsax.message_question,
                     label: 'Suporte',
                     onTap: onHelpTap,
                     showBadge: true,
                   ),
-                  _buildMenuItem(
-                    icon: Iconsax.info_circle,
+                  _buildMenuItem(context, icon: Iconsax.info_circle,
                     label: 'Sobre o Staggio',
                     onTap: onAboutTap,
                   ),
@@ -291,13 +280,13 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: EdgeInsets.fromLTRB(28, 8, 28, 4),
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
-          color: AppColors.textTertiary,
+          color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textTertiary,
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 1.2,
@@ -306,7 +295,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _buildMenuItem(BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
@@ -331,7 +320,7 @@ class AppDrawer extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
           ),
         ),
         trailing: Row(

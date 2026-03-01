@@ -140,7 +140,7 @@ class HelpScreen extends StatelessWidget {
                     }
                   },
                 ),
-                Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                Divider(height: 1, indent: 72, color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5)),
                 _buildContactTile(
                   icon: Iconsax.message_text,
                   title: 'WhatsApp',
@@ -152,7 +152,7 @@ class HelpScreen extends StatelessWidget {
                     }
                   },
                 ),
-                Divider(height: 1, indent: 72, color: AppColors.surfaceVariant),
+                Divider(height: 1, indent: 72, color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5)),
                 _buildContactTile(
                   icon: Iconsax.instagram,
                   title: 'Instagram',
