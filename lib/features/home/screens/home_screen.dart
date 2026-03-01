@@ -15,6 +15,7 @@ import '../../ai/screens/ai_photo_enhance_screen.dart';
 import '../../ai/screens/generations_history_screen.dart';
 import '../../../core/services/plan_gating.dart';
 import '../../../core/services/video_cache_service.dart';
+import '../../video/screens/video_generation_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -389,6 +390,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ).animate().fadeIn(delay: 800.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
+                  AiToolCard(
+                    title: 'Vídeo\nCinema',
+                    subtitle: 'Vídeos profissionais',
+                    icon: Iconsax.video,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    onTap: () {
+                      if (!PlanGating.hasAccess(widget.user, 'video_generation')) {
+                        PlanGating.showUpgradeDialog(context, 'Vídeo Cinematográfico');
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VideoGenerationScreen(apiClient: _apiClient),
+                        ),
+                      );
+                    },
+                  ).animate().fadeIn(delay: 900.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8)),
                 ]),
               ),
             ),

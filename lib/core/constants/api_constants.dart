@@ -46,6 +46,10 @@ class ApiConstants {
   static const String upload = '/storage/upload';
   static const String uploadMultiple = '/storage/upload-multiple';
 
+  // Video
+  static const String videoGenerate = '/video/generate';
+  static const String videoStyles = '/video/styles';
+
   // Health
   static const String health = '/health';
 }
