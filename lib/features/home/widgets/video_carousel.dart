@@ -56,15 +56,17 @@ class _VideoCarouselState extends State<VideoCarousel> {
     try {
       final controller = _controllers[index];
       if (!controller.value.isInitialized) {
+        // Set volume to 0 BEFORE initializing to prevent audio
+        controller.setVolume(0.0);
         await controller.initialize().timeout(
-          const Duration(seconds: 20),
+          const Duration(seconds: 8),
           onTimeout: () {
             debugPrint('[VIDEO_CAROUSEL] Timeout video $index');
           },
         );
       }
       controller.setLooping(true);
-      controller.setVolume(0.0);
+      if (!controller.value.isInitialized) controller.setVolume(0.0);
       if (mounted && !_disposed && index == 0 && !controller.value.isPlaying) {
         controller.play();
       }
